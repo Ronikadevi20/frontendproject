@@ -1,0 +1,16 @@
+{
+  "project": "job-vault-guardian",
+  "packageManager": "npm",
+  "framework": "vite",
+  "style": "default",
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/index.css",
+    "baseColor": "neutral"
+  },
+  "aliases": {
+    "@/components": "src/components",
+    "@/lib": "src/lib"
+  }
+}
+
