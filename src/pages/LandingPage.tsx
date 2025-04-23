@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Database, Key, FileText, CheckCircle, BarChart, Clock, Layers } from 'lucide-react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import {
   Carousel,

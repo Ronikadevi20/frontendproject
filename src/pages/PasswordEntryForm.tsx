@@ -5,7 +5,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { classifyPassword, passwordCategories, analyzePasswordStrength } from '@/services/aiClassifier';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import passwordsApi from '@/api/passwordApi';
 
 interface PasswordEntryFormProps {

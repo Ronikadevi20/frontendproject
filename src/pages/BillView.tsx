@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Edit, Trash2, CreditCard, ArrowDownCircle, Paperclip } from 'lucide-react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import billsApi, { BillEntry } from '@/api/billsApi';
 import { Download } from 'lucide-react';
 

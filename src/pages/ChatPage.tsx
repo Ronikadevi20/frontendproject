@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { applicationApi } from '@/api/applicationsApi';
 import { Button } from '@/components/ui/button';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { toast } from 'sonner';
 import { Mic, Send, Copy, RefreshCw, Save, ChevronLeft, X } from 'lucide-react';
 

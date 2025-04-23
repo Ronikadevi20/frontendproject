@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import ProfileSettings from './ProfileSettings';
 import PasswordSettings from './PasswordSettings';
-import Preferences from './Preferences';
 import Notifications from './Notifications';
 import DeviceHistory from './DeviceHistory';
 import DecoyMode from './DecoyMode';
@@ -19,12 +18,6 @@ const AccountSettings = ({ user, settings }) => {
             label: 'Profile',
             icon: <User className="h-4 w-4" />,
             component: <ProfileSettings user={user} />
-        },
-        {
-            id: 'preferences',
-            label: 'Preferences',
-            icon: <Settings className="h-4 w-4" />,
-            component: <Preferences settings={settings} />
         },
         {
             id: 'notifications',
@@ -48,9 +41,9 @@ const AccountSettings = ({ user, settings }) => {
         <PageContainer>
             <div className="app-container py-8">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2">
-                        Manage your account security and preferences
+                    <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
+                    <p className="text-gray-600 mt-1">
+                        Manage your account security.
                     </p>
                 </div>
 

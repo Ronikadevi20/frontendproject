@@ -7,7 +7,7 @@ import { TextField, AmountField, TextAreaField } from '@/components/bills/BillFo
 import BillDatePicker from '@/components/bills/BillDatePicker';
 import BillPaymentStatus from '@/components/bills/BillPaymentStatus';
 import { useParams, useNavigate } from 'react-router-dom';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import billsApi, { BillCreateDTO, BillEntry } from '@/api/billsApi';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';  // Make sure to import axios if not already done

@@ -3,7 +3,7 @@ import { Message } from "react-hook-form";
 import api from "./client";
 import { handleApiError } from "./client";
 import { toast } from 'sonner';
-
+import axios from 'axios';
 
 export interface ApplicationAttachment {
     id: string;
@@ -439,15 +439,28 @@ export const applicationApi = {
     },
 
     // In your API client (applicationsApi.ts)
+    // applicationsApi.ts
+
+
     transcribeAudio: async (formData: FormData) => {
         try {
-            const res = await api.post('/api/applications/audio-transcribe/', formData);
-            return res.data;
-        } catch (err: any) {
-            console.error("Transcription error:", err.response?.data || err.message);
-            throw err;
+            const response = await axios.post(
+                '/api/applications/audio-transcribe/',
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                        // DO NOT SET 'Content-Type' manually here
+                    },
+                }
+            );
+            return response.data;
+        } catch (error: any) {
+            console.error("Transcription error:", error.response?.data || error.message);
+            throw error;
         }
-    }
+    },
+
 
     // startInterviewSession: async (
     //     jobId: string,

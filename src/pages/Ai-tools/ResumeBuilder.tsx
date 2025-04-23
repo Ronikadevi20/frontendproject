@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardFooter } from '@/components/ui/card';
 import ResumeModal from '@/components/ui/ResumeModal';
 import { useNavigate } from 'react-router-dom';
 import applicationApi from '@/api/applicationsApi';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, Link, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ResumeData {
@@ -106,7 +106,14 @@ const ResumeBuilder = () => {
     }, []);
 
     return (
-        <PageContainer title=" Resume Builder ">
+        <PageContainer>
+            <div className="py-6">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Resume and Cover Letter builder
+                </h1>
+                <p className="mt-2 text-lg text-gray-600 max-w-2xl">
+                    Instantly craft tailored resumes and cover letters based on job roles and descriptions to stand out in applications.                </p>
+            </div>
             <div className="py-8 px-4 space-y-4">
                 <div className="flex justify-between items-center mb-6">
                     <button
@@ -116,70 +123,119 @@ const ResumeBuilder = () => {
                         <ArrowLeft className="w-4 h-4" />
                         Back to AI Tools
                     </button>
-                    
+
                 </div>
 
                 <Tabs defaultValue="resume" value={activeTab} onValueChange={(val) => setActiveTab(val as 'resume' | 'cover')}>
                     <TabsList className="mb-4">
-                        <TabsTrigger value="resume">📝 Resumes</TabsTrigger>
-                        <TabsTrigger value="cover">📄 Cover Letters</TabsTrigger>
+                        <TabsTrigger value="resume">Resumes</TabsTrigger>
+                        <TabsTrigger value="cover">Cover Letters</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="resume">
                         <Button className="mb-4" onClick={() => handleBuildClick('resume')}>
                             + Build Resume
                         </Button>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {resumes.map((item) => (
-                                <Card key={item.id} className="w-full min-h-[260px] rounded-2xl shadow-md p-4 flex flex-col justify-between">
-                                    <CardHeader>
-                                        <h3 className="font-semibold text-lg truncate">{item.title}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {new Date(item.created_at).toLocaleDateString()}
-                                        </p>
-                                    </CardHeader>
-                                    <CardFooter className="flex justify-between items-center mt-auto gap-2">
-                                        <Button variant="outline" onClick={() => navigate(`/ai-tools/resume-builder/view/resume/${item.id}`)}>View</Button>
-                                        <Button
-                                            variant="destructive"
-                                            onClick={async () => {
-                                                if (window.confirm('Are you sure you want to delete this resume?')) {
-                                                    await applicationApi.deleteResume(item.id);
-                                                    setResumes(resumes.filter(r => r.id !== item.id));
-                                                    toast.success('Deleted!');
-                                                }
-                                            }}
-                                        >
-                                            🗑️
-                                        </Button>
 
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                        </div>
+                        {resumes.length === 0 ? (
+                            <div className="text-center text-gray-500 mt-12">
+                                <p className="text-lg font-medium">You currently have no saved Resumes.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto border rounded-lg shadow-sm">
+                                <table className="min-w-full table-auto text-sm text-left">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Title</th>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Created</th>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {resumes.map((item) => (
+                                            <tr key={item.id} className="border-t hover:bg-gray-50">
+                                                <td className="px-4 py-3">{item.title}</td>
+                                                <td className="px-4 py-3">{new Date(item.created_at).toLocaleDateString()}</td>
+                                                <td className="px-4 py-3 flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => navigate(`/ai-tools/resume-builder/view/resume/${item.id}`)}
+                                                    >
+                                                        View
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="text-red-500"
+                                                        size="sm"
+                                                        onClick={async () => {
+                                                            if (window.confirm('Are you sure you want to delete this resume?')) {
+                                                                await applicationApi.deleteResume(item.id);
+                                                                setResumes(resumes.filter((r) => r.id !== item.id));
+                                                                toast.success('Deleted!');
+                                                            }
+                                                        }}
+                                                    >
+                                                        Trash
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </TabsContent>
 
                     <TabsContent value="cover">
                         <Button className="mb-4" onClick={() => handleBuildClick('cover')}>
                             + Build Cover Letter
                         </Button>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {coverLetters.map((item) => (
-                                <Card key={item.id} className="w-full min-h-[260px] rounded-2xl shadow-md p-4 flex flex-col justify-between">
-                                    <CardHeader>
-                                        <h3 className="font-semibold text-lg truncate">{item.title}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            {new Date(item.created_at).toLocaleDateString()}
-                                        </p>
-                                    </CardHeader>
-                                    <CardFooter className="flex justify-between items-center mt-auto gap-2">
-                                        <Button variant="outline" onClick={() => navigate(`/ai-tools/resume-builder/view/cover/${item.id}`)}>View</Button>
-                                        <Button variant="destructive" onClick={() => handleDeleteCoverLetter(item.id)}>🗑️</Button>
-                                    </CardFooter>
-                                </Card>
-                            ))}
-                        </div>
+
+                        {coverLetters.length === 0 ? (
+                            <div className="text-center text-gray-500 mt-12">
+                                <p className="text-lg font-medium">You currently have no saved Cover Letters.</p>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto border rounded-lg shadow-sm">
+                                <table className="min-w-full table-auto text-sm text-left">
+                                    <thead className="bg-gray-100">
+                                        <tr>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Title</th>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Created</th>
+                                            <th className="px-4 py-2 font-medium text-gray-700">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {coverLetters.map((item) => (
+                                            <tr key={item.id} className="border-t hover:bg-gray-50">
+                                                <td className="px-4 py-3">{item.title}</td>
+                                                <td className="px-4 py-3">{new Date(item.created_at).toLocaleDateString()}</td>
+                                                <td className="px-4 py-3 flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => navigate(`/ai-tools/resume-builder/view/cover/${item.id}`)}
+                                                    >
+                                                        View
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="text-red-500"
+                                                        size="sm"
+                                                        onClick={() => handleDeleteCoverLetter(item.id)}
+                                                    >
+                                                        Trash
+                                                    </Button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </TabsContent>
+
                 </Tabs>
 
                 <ResumeModal

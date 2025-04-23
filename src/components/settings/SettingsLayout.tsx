@@ -15,7 +15,6 @@ export const SettingsLayout = ({
     const tabs = [
         { id: 'profile', icon: User, label: 'Profile' },
         { id: 'password', icon: KeyRound, label: 'Password' },
-        { id: 'preferences', icon: Palette, label: 'Preferences' },
         { id: 'notifications', icon: Bell, label: 'Notifications' },
         { id: 'security', icon: Shield, label: 'Security' },
         { id: 'ai', icon: CpuIcon, label: 'AI Settings' },

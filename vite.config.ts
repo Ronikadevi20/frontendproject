@@ -8,7 +8,11 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      '/api': 'http://localhost:8000', // your Django backend port
+    },
   },
+
   plugins: [
     react(),
     mode === 'development' &&

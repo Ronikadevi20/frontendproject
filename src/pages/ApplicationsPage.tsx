@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Search, Trash2, Edit, ArrowUpDown, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -234,7 +234,7 @@ const ApplicationsPage = () => {
 
               <Button onClick={handleAddApplication} className="whitespace-nowrap">
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Add Application
+                Add Job Application
               </Button>
             </div>
           </div>
@@ -365,7 +365,7 @@ const ApplicationsPage = () => {
               <p className="mt-4 text-lg text-gray-600">No applications found</p>
               <p className="text-gray-500 mb-4">Start tracking your job applications</p>
               <Button onClick={handleAddApplication}>
-                Add Your First Application
+                Add Your First Job Application
               </Button>
             </div>
           )}

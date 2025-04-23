@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import PageContainer from "@/components/layout/PageContainer";
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import DocumentList from "@/components/documents/DocumentList";

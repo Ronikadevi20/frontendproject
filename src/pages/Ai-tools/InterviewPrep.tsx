@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { applicationApi, JobApplication } from '@/api/applicationsApi';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -123,7 +123,14 @@ const InterviewPrep = () => {
     );
 
     return (
-        <PageContainer title="🧠 Interview & Assessment Prep">
+        <PageContainer>
+            <div className="py-6">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Interview And Assesmet Preparation
+                </h1>
+                <p className="mt-2 text-lg text-gray-600 max-w-2xl">
+                    Your personalized AI coach for acing interviews and assessments. </p>
+            </div>
             <div className="py-8 px-4 space-y-4">
                 <div className="flex justify-between items-center mb-6">
                     <button
@@ -138,7 +145,7 @@ const InterviewPrep = () => {
                 {!selected ? (
                     applications.length === 0 ? (
                         <div className="text-center text-gray-500 mt-12">
-                            <p className="text-lg font-medium">🗂 No Interview or Assessment Applications Yet</p>
+                            <p className="text-lg font-medium">No Interview or Assessment Applications Yet</p>
                             <p className="text-sm mt-2">
                                 You haven’t saved any applications under these stages. Add some from your job portal to start prepping with AI!
                             </p>

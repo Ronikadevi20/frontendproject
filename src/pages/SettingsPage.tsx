@@ -1,4 +1,4 @@
-import PageContainer from "@/components/layout/PageContainer";
+import { PageContainer } from '@/components/layout/PageContainer';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import settingsApi, { UserSettingsUpdateDTO } from "@/api/settingsApi";

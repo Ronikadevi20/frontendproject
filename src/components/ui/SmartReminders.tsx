@@ -131,7 +131,7 @@ const SmartReminders: React.FC<SmartRemindersProps> = ({
 
                 {sorted.length === 0 && (
 
-                    <p className="text-gray-500 text-sm text-center">🎉 No pending reminders!</p>
+                    <p className="text-gray-500 text-sm text-center">No pending reminders!</p>
                 )}
             </div>
         </section>

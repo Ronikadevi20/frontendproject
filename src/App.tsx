@@ -28,9 +28,7 @@ import BillView from "./pages/BillView";
 import AItools from "./pages/AItools";
 import FollowUp from '@/pages/Ai-tools/FollowUp';
 import ResumeBuilder from '@/pages/Ai-tools/ResumeBuilder';
-import GlassdoorInsights from '@/pages/Ai-tools/GlassdoorInsights';
 import InterviewPrep from '@/pages/Ai-tools/InterviewPrep';
-import RecruiterOutreach from '@/pages/Ai-tools/RecruiterOutreach';
 import ResumeView from '@/pages/ResumeViewPage';
 import CoverView from '@/pages/CoverLetterViewPage';
 import InterviewPracticePage from "./pages/ChatPage";
@@ -51,9 +49,7 @@ const App = () => (
           <Route path="/ai-tools/resume-builder" element={<ResumeBuilder />} />
           <Route path="/ai-tools/resume-builder/view/cover/:id" element={<CoverView />} />
           <Route path="/ai-tools/resume-builder/view/resume/:id" element={<ResumeView />} />
-          <Route path="/ai-tools/recruiter-outreach" element={<RecruiterOutreach />} />
           <Route path="/ai-tools/interview-prep" element={<InterviewPrep />} />
-          <Route path="/ai-tools/glassdoor-insights" element={<GlassdoorInsights />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/verification" element={<VerificationPage />} />
           <Route path="/login" element={<LoginPage />} />

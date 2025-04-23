@@ -13,17 +13,8 @@ const DeviceHistory = () => {
     const [decoyPassword, setDecoyPassword] = useState('');
     const [confirmDecoyPassword, setConfirmDecoyPassword] = useState('');
     const [isSettingDecoy, setIsSettingDecoy] = useState(false);
-    const [isPasswordShared, setIsPasswordShared] = useState(false);
     const { toast } = useToast();
 
-    useEffect(() => {
-        try {
-            const storedValue = sessionStorage.getItem('shared_password');
-            setIsPasswordShared(storedValue === 'true');
-        } catch (error) {
-            console.error('Error accessing sessionStorage:', error);
-        }
-    }, []);
 
     // Check sessionStorage on mount to determine if decoy mode is active
     useEffect(() => {
@@ -81,16 +72,6 @@ const DeviceHistory = () => {
         }
     };
 
-    const deviceHistory = [
-        { id: 1, device: 'Chrome on Windows', ip: '192.168.1.1', time: '2024-03-20 14:30' },
-        { id: 2, device: 'Safari on iPhone', ip: '192.168.1.2', time: '2024-03-19 09:15' },
-    ];
-
-    const decoyData = [
-        { id: 1, device: 'Decoy Device 1', ip: '0.0.0.0', time: '2024-01-01 00:00' },
-        { id: 2, device: 'Decoy Device 2', ip: '0.0.0.0', time: '2024-01-01 00:01' },
-    ];
-
     return (
         <section className="glass-card p-6">
             <h3 className="text-xl font-semibold mb-4">EncryptEase</h3>
@@ -108,40 +89,21 @@ const DeviceHistory = () => {
                 />
             </div>
 
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <Label>Share Password</Label>
-                    <p className="text-sm text-muted-foreground">
-                        {isPasswordShared ? 'Password is currently shared' : 'Password is private'}
-                    </p>
-                </div>
-                <Switch
-                    checked={isPasswordShared}
-                    onCheckedChange={(checked) => {
-                        try {
-                            sessionStorage.setItem('shared_password', String(checked));
-                            setIsPasswordShared(checked);
-                        } catch (error) {
-                            console.error('Error updating sessionStorage:', error);
-                            toast({
-                                title: 'Error',
-                                description: 'Failed to update password sharing setting',
-                                variant: 'destructive',
-                            });
-                        }
-                    }}
-                />
-            </div>
-
             {/* Device list */}
-            {(decoyMode ? decoyData : deviceHistory).map((device) => (
-                <div key={device.id} className="flex justify-between items-center p-4 border rounded-lg mb-2">
-                    <div>
-                        <p className="font-medium">{device.device}</p>
-                        <p className="text-sm text-muted-foreground">{device.ip} • {device.time}</p>
-                    </div>
-                </div>
-            ))}
+            <div className="p-6 border rounded-lg bg-gray-50 border-gray-200 shadow-sm">
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">You are viewing your real account data.</h4>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                    Everything displayed here is your actual data: real passwords, bills, documents, and job applications.
+                    If you're in a situation where you need to open EncryptEase in front of someone else, you can switch to
+                    <strong> Decoy Mode</strong>.
+                    <br /><br />
+                    When someone logs in using your <strong>Decoy Password</strong>, they’ll see a completely fake version of your dashboard
+                    with dummy data. This helps you protect sensitive information and maintain privacy, especially in emergencies or high-risk scenarios.
+                    <br /><br />
+                    For your security, you'll receive an email notification if your decoy password is used, and you'll be required
+                    to set a new deocy password afterward. Decoy Mode automatically expires after one login with that password.
+                </p>
+            </div>
 
             {/* Decoy Password Modal */}
             <Dialog open={showDecoyModal} onOpenChange={setShowDecoyModal}>

@@ -9,7 +9,7 @@ interface FollowUpModalProps {
     onClose: () => void;
     content: string;
     isLoading: boolean;
-    onGenerate: (input: string) => void;
+    onGenerate: (jobId: string, input: string) => void;
     jobTitle: string;
     company: string;
     jobId: string;
@@ -101,7 +101,7 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
                                     variant="outline"
                                     onClick={() => {
                                         const prompt = `Please write a polite follow-up email for the role of ${jobTitle} at ${company}`;
-                                        onGenerate(prompt);
+                                        onGenerate(jobId, prompt);
                                     }}
                                 >
                                     Regenerate

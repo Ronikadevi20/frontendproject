@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { FileUp, X, Calendar, ArrowLeft } from "lucide-react";
-import PageContainer from "@/components/layout/PageContainer";
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

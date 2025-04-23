@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authApi } from '@/api/authApi';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 
 const VerificationPage = () => {
     const { email, otp_code } = useParams<{ email: string, otp_code: string }>();

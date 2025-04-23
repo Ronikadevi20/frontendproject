@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, RefreshCw, ArrowUpDown, Search, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,

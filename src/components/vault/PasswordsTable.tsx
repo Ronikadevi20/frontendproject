@@ -77,7 +77,7 @@ const SharePasswordModal = ({ passwordEntry }: { passwordEntry: PasswordEntry })
             const emailContent = `
                 <html>
                     <body style="font-family: Arial, sans-serif; padding: 20px;">
-                        <h2 style="color: #1a365d;">Password Sharing from EncryptEasy</h2>
+                        <h2 style="color: #1a365d;">Password Sharing from EncryptEase</h2>
                         <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px;">
                             <h3 style="color: #2d3748; margin-bottom: 15px;">🔗 Shared Password Access</h3>
                             <p>You've been granted temporary access to a password:</p>
@@ -104,7 +104,7 @@ const SharePasswordModal = ({ passwordEntry }: { passwordEntry: PasswordEntry })
             `;
 
             await authApi.sendEmail(
-                "Secure Password Sharing from EncryptEasy",
+                "Secure Password Sharing from EncryptEase",
                 emailContent,
                 [email]
             );

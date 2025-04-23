@@ -1,6 +1,6 @@
 // ✅ Cleaned up and corrected FollowUp.tsx
 import React, { useEffect, useState } from 'react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { applicationApi, JobApplication } from '@/api/applicationsApi';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -96,18 +96,16 @@ const FollowUp = () => {
             handleGenerateEmail(job.id, prompt);
         }, 0);
     };
-    const handleGenerateEmail = async (input: string) => {
-        if (!selectedJobId) return;
-
+    const handleGenerateEmail = async (jobId: string, input: string) => {
         try {
-            console.log("📤 Calling generateFollowUp for", selectedJobId);
-            const result = await applicationApi.generateFollowUp(selectedJobId, input);
-            console.log("📥 Received result:", result);
+            setIsGenerating(true);
+            setGeneratingMap(prev => ({ ...prev, [jobId]: true }));
 
+            const result = await applicationApi.generateFollowUp(jobId, input);
             const content = result?.email || result?.content;
+
             if (content) {
                 setGeneratedEmail(content);
-                console.log("✅ Email set:", content);
             } else {
                 toast.error('No email returned.');
             }
@@ -115,17 +113,25 @@ const FollowUp = () => {
             console.error("❌ Error generating follow-up:", e);
             toast.error('Something went wrong while generating the email.');
         } finally {
-            // 🛑 THIS WAS MISSING!
-            setIsGenerating(false); // ✅ fixes stuck spinner
-            setGeneratingMap(prev => ({ ...prev, [selectedJobId]: false }));
+            setIsGenerating(false);
+            setGeneratingMap(prev => ({ ...prev, [jobId]: false }));
         }
     };
+
 
 
     const selectedJob = followUpJobs.find(job => job.id === selectedJobId);
 
     return (
-        <PageContainer title="📩 Follow-Up Job Applications">
+        <PageContainer>
+            <div className="py-6">
+                <h1 className="text-3xl font-bold text-gray-900">
+                    Follow-Up Applications
+                </h1>
+                <p className="mt-2 text-lg text-gray-600 max-w-2xl">
+                    Still waiting to hear back? Let AI help you send the perfect follow-up and stay on top of your job hunt.
+                </p>
+            </div>
             <div className="py-8 px-4">
                 <button
                     onClick={() => navigate('/ai-tools')}
@@ -137,8 +143,8 @@ const FollowUp = () => {
 
                 <Tabs defaultValue="pending" value={activeTab} onValueChange={(val) => setActiveTab(val as 'pending' | 'sent')}>
                     <TabsList className="mb-4">
-                        <TabsTrigger value="pending">📬 Pending Follow-Ups</TabsTrigger>
-                        <TabsTrigger value="sent">✅ Sent Follow-Ups</TabsTrigger>
+                        <TabsTrigger value="pending">Pending Follow-Ups</TabsTrigger>
+                        <TabsTrigger value="sent">Sent Follow-Ups</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="pending">
@@ -173,7 +179,12 @@ const FollowUp = () => {
                                 </div>
                             ))
                         ) : (
-                            <p className="text-center text-gray-500 py-4">No applications currently require follow-up.</p>
+                            <div className="text-center text-gray-500 mt-12">
+                                <p className="text-lg font-medium">No applications currently require follow-up.</p>
+                                <p className="text-sm mt-2">
+                                    Apply to jobs to see them here on your Follow-Up Applications dashboard.
+                                </p>
+                            </div>
                         )}
                     </TabsContent>
 
@@ -186,8 +197,9 @@ const FollowUp = () => {
                                         <span className="text-base text-gray-600 font-medium">{job.company}</span>
                                     </div>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        ✅ Email Sent 🕒 Sent on {job.email_sent_at ? new Date(job.email_sent_at).toLocaleDateString() : 'Unknown'}
+                                        Email Sent
                                     </p>
+
                                     <Button variant="default" className="px-4 py-2 text-sm mt-2" onClick={() => handleOpenDraft(job)}>
                                         📄 View Draft
                                     </Button>
@@ -206,7 +218,7 @@ const FollowUp = () => {
                     onClose={() => setIsModalOpen(false)}
                     content={generatedEmail}
                     isLoading={isGenerating}
-                    onGenerate={(input) => handleGenerateEmail(selectedJobId!, input)}
+                    onGenerate={handleGenerateEmail}
                     jobTitle={selectedJob?.job_title || ''}
                     company={selectedJob?.company || ''}
                     jobId={selectedJob?.id || ''}

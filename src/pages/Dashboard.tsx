@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Briefcase, Key, FileText, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import { authApi } from '@/api/authApi';
 import { applicationApi, JobApplication } from '@/api/applicationsApi';
@@ -339,7 +339,7 @@ const Dashboard = () => {
             <div className="mt-4 md:mt-0">
               <Button onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && navigate('/applications/new') }}>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                New Application
+                Add Job Application
               </Button>
             </div>
           </div>
@@ -419,7 +419,7 @@ const Dashboard = () => {
               <div className="text-center py-6">
                 <p className="text-gray-500 mb-4">You haven't added any job applications yet.</p>
                 <Button onClick={() => navigate('/applications/new')}>
-                  Add Your First Application
+                  Add Your First Job Application
                 </Button>
               </div>
             )}
@@ -506,7 +506,7 @@ const Dashboard = () => {
               <div className="flex flex-col items-start">
                 <FileText className="h-6 w-6 text-EncryptEase-600 mb-2" />
                 <span className="text-base font-medium">View All Applications</span>
-                <span className="text-xs text-gray-500 mt-1">See your complete job list</span>
+                <span className="text-xs text-gray-500 mt-1">View saved Job Applications</span>
               </div>
             </Button>
 

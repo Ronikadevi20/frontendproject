@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import applicationApi from '@/api/applicationsApi';
 import { ArrowLeft } from 'lucide-react';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 
 export default function ResumeViewPage() {
     const { id } = useParams();
@@ -105,7 +105,12 @@ export default function ResumeViewPage() {
 
     return (
 
-        <PageContainer title=" Resume Builder ">
+        <PageContainer>
+            <div className="py-6">
+                <h1 className="text-2xl font-bold text-gray-900">
+                    Resume Builder
+                </h1>
+            </div>
             <div className="py-8 px-4 space-y-4">
                 <div className="flex justify-between items-center mb-6">
                     <button
@@ -134,13 +139,12 @@ export default function ResumeViewPage() {
                 />
 
                 <div className="flex gap-3 pt-4">
-                    <Button variant="outline" onClick={handleCopy}>📋 Copy</Button>
-                    <Button variant="default" onClick={handleSave} disabled={saving}>
+                    <Button className="bg-white text-black border border-gray-300" onClick={handleCopy}>📋 Copy</Button>
+                    <Button className="bg-white text-black border border-gray-300" onClick={handleSave} disabled={saving}>
                         {saving ? 'Saving...' : '💾 Save'}
                     </Button>
-                    <Button variant="secondary" onClick={handleDownload}>⬇️ Download PDF</Button>
-
-                    <Button variant="destructive" onClick={handleRegenerate} disabled={regenerating}>
+                    <Button className="bg-white text-black border border-gray-300" onClick={handleDownload}>⬇️ Download PDF</Button>
+                    <Button className="bg-black text-white" onClick={handleRegenerate} disabled={regenerating}>
                         {regenerating ? 'Regenerating...' : '🔄 Regenerate'}
                     </Button>
                 </div>

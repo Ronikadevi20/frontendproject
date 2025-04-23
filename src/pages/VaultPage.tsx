@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle, Search, Eye, EyeOff, Trash2, Edit, ArrowUpDown, CreditCard, FileText, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
-import PageContainer from '@/components/layout/PageContainer';
+import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -324,8 +324,8 @@ const VaultPage = () => {
             <div className="app-container py-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Vault Manager</h1>
-                        <p className="text-gray-500 mt-1">Secure your credentials, bills, and important documents</p>
+                        <h1 className="text-2xl font-bold text-gray-900">Vault Manager</h1>
+                        <p className="text-gray-600 mt-1">Secure your credentials, bills, and important documents</p>
                     </div>
                     <div className="flex items-center space-x-4">
                         <Button variant="outline" onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && navigate('/trash') }}>

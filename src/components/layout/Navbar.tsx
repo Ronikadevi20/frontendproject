@@ -49,7 +49,7 @@ const Navbar = () => {
                 Dashboard
               </Link>
               <Link to="/applications" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
-                Jobs Applications
+                Job Applications
               </Link>
               <Link to="/AItools" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
                 AI Tools
