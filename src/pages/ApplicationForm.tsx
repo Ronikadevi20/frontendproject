@@ -10,7 +10,7 @@ import applicationApi, {
 } from '@/api/applicationsApi';
 import { format, formatISO, parseISO } from 'date-fns';
 
-type Status = 'applied' | 'interviewing' | 'assesment' | 'rejected' | 'offered' | 'accepted' | 'declined';
+type Status = 'applied' | 'interviewing' | 'assessment' | 'rejected' | 'offered' | 'accepted' | 'declined';
 
 interface ApplicationFormData extends JobApplicationCreateDTO {
   applied_date: string;
@@ -86,8 +86,8 @@ const ApplicationForm = () => {
   ) => {
     const { name, value } = e.target;
     setFormData(prev => {
-      // Clear deadline_date if status is changed away from interview/assesment
-      if (name === 'status' && !['interviewing', 'assesment'].includes(value)) {
+      // Clear deadline_date if status is changed away from interview/assessment
+      if (name === 'status' && !['interviewing', 'assessment'].includes(value)) {
         return { ...prev, [name]: value, deadline_date: '' };
       }
 
@@ -106,7 +106,7 @@ const ApplicationForm = () => {
     if (formData.application_url && !isValidUrl(formData.application_url)) {
       newErrors.application_url = 'Invalid URL format';
     }
-    if ((formData.status === 'interviewing' || formData.status === 'assesment') && !formData.deadline_date) {
+    if ((formData.status === 'interviewing' || formData.status === 'assessment') && !formData.deadline_date) {
       newErrors.deadline_date = 'Deadline is required for interview or assessment status';
     }
 
@@ -249,7 +249,7 @@ const ApplicationForm = () => {
                   <option value="applied">Applied</option>
                   <option value="interviewing">Interview</option>
                   <option value="offered">Offer Received</option>
-                  <option value="assesment">Assesment</option>
+                  <option value="assessment">Assessment</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Rejected</option>
                   <option value="declined">Declined</option>
@@ -274,7 +274,7 @@ const ApplicationForm = () => {
               </div>
 
               {/* Deadline Date Field */}
-              {(formData.status === 'interviewing' || formData.status === 'assesment') && (
+              {(formData.status === 'interviewing' || formData.status === 'assessment') && (
                 <div>
                   <label htmlFor="deadline_date" className="block text-sm font-medium text-gray-700 mb-1">
                     Deadline Date

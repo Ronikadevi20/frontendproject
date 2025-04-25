@@ -1,9 +1,8 @@
-
-import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 import { Shield, Database, Key, FileText, CheckCircle, BarChart, Clock, Layers } from 'lucide-react';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Button } from '@/components/ui/button';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Carousel,
   CarouselContent,
@@ -15,6 +14,14 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const LandingPage = () => {
   const statsRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('auth_token');
+    setIsAuthenticated(!!token);
+  }, []);
+
 
   // Add animation classes to elements as they come into view
   useEffect(() => {
@@ -23,6 +30,7 @@ const LandingPage = () => {
       rootMargin: '0px',
       threshold: 0.1,
     };
+
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -56,6 +64,7 @@ const LandingPage = () => {
             htmlCounter.innerText = target.toString();
           }
         };
+
 
         updateCounter();
       });
@@ -101,16 +110,26 @@ const LandingPage = () => {
               <p className="text-xl text-gray-600 mb-8">
                 Manage your job applications and secure passwords in one place. Streamline your job search with EncryptEase.
               </p>
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Link to="/signup">
-                  <Button size="lg" className="w-full sm:w-auto hover-card-effect">Get Started</Button>
-                </Link>
-                <Link to="/login">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto hover-card-effect">
-                    Log In
-                  </Button>
-                </Link>
-              </div>
+              {!isAuthenticated ? (
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                  <Link to="/signup">
+                    <Button size="lg" className="w-full sm:w-auto hover-card-effect">Get Started</Button>
+                  </Link>
+                  <Link to="/login">
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto hover-card-effect">
+                      Log In
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto hover-card-effect"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Go to Dashboard
+                </Button>
+              )}
             </div>
 
             <div className="w-full max-w-md lg:max-w-lg relative z-10">
@@ -400,13 +419,23 @@ const LandingPage = () => {
                 Join thousands of students who use EncryptEase to organize their job search journey.
               </p>
             </div>
-            <div className="flex-shrink-0">
-              <Link to="/signup">
-                <Button size="lg" className="text-base px-6 py-5 hover-card-effect">
-                  Get Started for Free
-                </Button>
-              </Link>
-            </div>
+            {!isAuthenticated ? (
+              <div className="flex-shrink-0">
+                <Link to="/signup">
+                  <Button size="lg" className="text-base px-6 py-5 hover-card-effect">
+                    Get Started for Free
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full sm:w-auto hover-card-effect"
+                onClick={() => navigate('/dashboard')}
+              >
+                Go to Dashboard
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -539,7 +568,7 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-    </PageContainer>
+    </PageContainer >
   );
 };
 

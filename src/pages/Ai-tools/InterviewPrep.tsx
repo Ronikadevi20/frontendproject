@@ -20,13 +20,13 @@ const InterviewPrep = () => {
 
     interface InterviewPrepResponse {
         prep_content: string;
-        status: 'interviewing' | 'assesment';
+        status: 'interviewing' | 'assessment';
     }
     useEffect(() => {
         const fetchApps = async () => {
             const all = await applicationApi.list();
             const filtered = all.filter(app =>
-                ['interviewing', 'assesment'].includes(app.status.toLowerCase())
+                ['interviewing', 'assessment'].includes(app.status.toLowerCase())
             );
             setApplications(filtered);
         };
@@ -34,7 +34,7 @@ const InterviewPrep = () => {
     }, []);
     const [preparedIds, setPreparedIds] = useState<number[]>([]);
 
-    const [prepStatus, setPrepStatus] = useState<'interviewing' | 'assesment' | null>(null);
+    const [prepStatus, setPrepStatus] = useState<'interviewing' | 'assessment' | null>(null);
     const navigate = useNavigate();
     const [userNotes, setUserNotes] = useState('');
     const saveNotes = async () => {
@@ -59,11 +59,12 @@ const InterviewPrep = () => {
     const handleGeneratePrep = async (app: JobApplication) => {
         setSelected(app);
         setPrepContent('');
+
         setIsLoading(true);
         try {
-            const response = await applicationApi.generateInterviewPrep(app.id) as { prep_content: string; status: 'interviewing' | 'assesment' };
+            const response = await applicationApi.generateInterviewPrep(app.id) as { prep_content: string; status: 'interviewing' | 'assessment' };
             setPrepContent(response.prep_content);
-            setPrepStatus(response.status);
+            setActiveTab(response.status === 'assessment' ? 'tips' : 'questions');
             setPrepCache(prev => ({
                 ...prev,
                 [app.id]: response.prep_content
@@ -118,15 +119,13 @@ const InterviewPrep = () => {
             else sections[current].push(line);
         }
     }
-    const [activeTab, setActiveTab] = useState<'questions' | 'answers' | 'tips' | 'notes'>(
-        prepStatus === 'assesment' ? 'tips' : 'questions'
-    );
+    const [activeTab, setActiveTab] = useState<'questions' | 'answers' | 'tips' | 'notes'>('questions');
 
     return (
         <PageContainer>
             <div className="py-6">
                 <h1 className="text-3xl font-bold text-gray-900">
-                    Interview And Assesmet Preparation
+                    Interview And Assessment Preparation
                 </h1>
                 <p className="mt-2 text-lg text-gray-600 max-w-2xl">
                     Your personalized AI coach for acing interviews and assessments. </p>
@@ -171,10 +170,12 @@ const InterviewPrep = () => {
                                             {app.is_prepared ? (
                                                 <Button variant="outline" onClick={async () => {
                                                     setSelected(app);
-                                                    setPrepContent(prepCache?.[app.id] || '');
-                                                    setPrepStatus(app.status.toLowerCase() === 'assesment' ? 'assesment' : 'interviewing');
+                                                    const status = app.status.toLowerCase() === 'assessment' ? 'assessment' : 'interviewing';
+                                                    setPrepStatus(status);
+                                                    setActiveTab(status === 'assessment' ? 'tips' : 'questions'); // 👈 set it based on status
+
                                                     const saved = await applicationApi.getInterviewPrepDraft(Number(app.id));
-                                                    setPrepContent(saved.prep_content);
+                                                    setPrepContent(saved.prep_content || prepCache?.[app.id] || '');
                                                 }}>
                                                     Revisit Prep
                                                 </Button>
@@ -225,23 +226,39 @@ const InterviewPrep = () => {
                             <p className="text-gray-500">Generating prep content...</p>
                         ) : (
                             <Tabs
-                                defaultValue={prepStatus === 'assesment' ? 'tips' : 'questions'}
+                                defaultValue={prepStatus === 'assessment' ? 'tips' : 'questions'}
                                 value={activeTab}
                                 onValueChange={(value: string) => setActiveTab(value as 'questions' | 'answers' | 'tips' | 'notes')}
                                 className="w-full mt-4"
                             >
-                                {prepStatus === 'assesment' ? (
+                                {prepStatus === 'assessment' ? (
                                     <>
                                         <TabsList>
                                             <TabsTrigger value="tips">Assessment Tips</TabsTrigger>
                                             <TabsTrigger value="notes">My Notes</TabsTrigger>
                                         </TabsList>
                                         <TabsContent value="tips">
-                                            {sections.tips.map((t, i) => (
-                                                <p key={i} className="text-sm mb-2">🔍 {t}</p>
-                                            ))}
+                                            {sections.tips.length > 0 ? (
+                                                sections.tips.map((t, i) => (
+                                                    <p key={i} className="text-sm mb-2">🔍 {t}</p>
+                                                ))
+                                            ) : (
+                                                <p className="text-gray-500 text-sm">No assessment tips available.</p>
+                                            )}
+                                        </TabsContent>
+                                        <TabsContent value="notes">
+                                            <textarea
+                                                value={userNotes}
+                                                onChange={(e) => setUserNotes(e.target.value)}
+                                                placeholder="Add your custom thoughts, ideas, or prep points here..."
+                                                className="w-full h-64 p-4 border rounded-md text-sm resize-y"
+                                            />
+                                            <Button onClick={saveNotes} className="mt-3 bg-black text-white">
+                                                Save Notes
+                                            </Button>
                                         </TabsContent>
                                     </>
+
                                 ) : (
                                     <>
                                         <TabsList>
