@@ -64,7 +64,8 @@ const InterviewPrep = () => {
         try {
             const response = await applicationApi.generateInterviewPrep(app.id) as { prep_content: string; status: 'interviewing' | 'assessment' };
             setPrepContent(response.prep_content);
-            setActiveTab(response.status === 'assessment' ? 'tips' : 'questions');
+            setPrepStatus(response.status);
+            setActiveTab(response.status === 'assessment' ? 'tips' : 'questions'); // ✅ THIS IS THE FIX
             setPrepCache(prev => ({
                 ...prev,
                 [app.id]: response.prep_content
@@ -170,15 +171,15 @@ const InterviewPrep = () => {
                                             {app.is_prepared ? (
                                                 <Button variant="outline" onClick={async () => {
                                                     setSelected(app);
-                                                    const status = app.status.toLowerCase() === 'assessment' ? 'assessment' : 'interviewing';
-                                                    setPrepStatus(status);
-                                                    setActiveTab(status === 'assessment' ? 'tips' : 'questions'); // 👈 set it based on status
-
+                                                    setPrepContent(prepCache?.[app.id] || '');
+                                                    setPrepStatus(app.status.toLowerCase() === 'assessment' ? 'assessment' : 'interviewing');
+                                                    setActiveTab(app.status.toLowerCase() === 'assessment' ? 'tips' : 'questions');
                                                     const saved = await applicationApi.getInterviewPrepDraft(Number(app.id));
-                                                    setPrepContent(saved.prep_content || prepCache?.[app.id] || '');
+                                                    setPrepContent(saved.prep_content);
                                                 }}>
                                                     Revisit Prep
                                                 </Button>
+
                                             ) : (
                                                 <Button onClick={() => handleGeneratePrep(app)}>
                                                     Prepare Now
