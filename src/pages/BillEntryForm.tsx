@@ -199,7 +199,7 @@ const BillEntryForm = () => {
             let response;
             // Use axios directly for the file upload
             if (isEditMode && id) {
-                response = await axios.put(`http://127.0.0.1:8000/api/bills/${id}/`, formData, {
+                response = await axios.put(`${import.meta.env.VITE_API_URL}/api/bills/${id}/`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${sessionStorage.getItem("auth_token")}`
@@ -208,7 +208,7 @@ const BillEntryForm = () => {
 
                 console.log(response)
             } else {
-                response = await axios.post('http://127.0.0.1:8000/api/bills/', formData, {
+                response = await axios.post('${import.meta.env.VITE_API_URL}/api/bills/', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${sessionStorage.getItem("auth_token")}`
