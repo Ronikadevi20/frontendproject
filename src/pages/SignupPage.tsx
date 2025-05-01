@@ -98,6 +98,7 @@ const SignupPage = () => {
       setStep(SignupStep.OTP);
     } catch (error: any) {
       console.error('Signup error:', error);
+      handleSignupError(error);
     } finally {
       setIsLoading(false);
     }
@@ -322,7 +323,8 @@ const SignupPage = () => {
                   <p className="mt-2 text-gray-600">Join EncryptEase to organize your job search</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} data-testid="signup-form" className="space-y-6">
+
                   <div>
                     <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                       Username

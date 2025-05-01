@@ -444,13 +444,14 @@ export const applicationApi = {
 
     transcribeAudio: async (formData: FormData) => {
         try {
+            const token = sessionStorage.getItem("auth_token"); // or fallback if needed
+
             const response = await axios.post(
                 '/api/applications/audio-transcribe/',
                 formData,
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                        // DO NOT SET 'Content-Type' manually here
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );

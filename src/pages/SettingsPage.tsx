@@ -12,6 +12,7 @@ const SettingsPage = () => {
     const { user, isLoading, logout } = useAuth(); // Use the hook
     const [settings, setSettings] = useState<UserSettingsUpdateDTO | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [settingsLoading, setSettingsLoading] = useState(true);
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -25,6 +26,7 @@ const SettingsPage = () => {
                 const settingsData = await settingsApi.getSettings();
                 if (settingsData) {
                     setSettings(settingsData);
+                    setSettingsLoading(false);
                 }
             } catch (error) {
                 toast.error('Failed to load settings data');
@@ -49,7 +51,7 @@ const SettingsPage = () => {
         }
     };
 
-    if (isLoading) {
+    if (isLoading || settingsLoading) {
         return (
             <PageContainer>
                 <div className="flex justify-center items-center h-64">

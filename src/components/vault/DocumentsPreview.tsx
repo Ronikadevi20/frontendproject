@@ -24,3 +24,4 @@ const DocumentsPreview = () => {
         </div>
     );
 };
+export default DocumentsPreview;

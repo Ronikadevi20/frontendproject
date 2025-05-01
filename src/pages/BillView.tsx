@@ -287,7 +287,7 @@ const BillView = () => {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
+                        <AlertDialogAction data-testid="confirm-delete"
                             className="bg-red-600 text-white hover:bg-red-700"
                             onClick={handleDelete}
                             disabled={isDeleting}

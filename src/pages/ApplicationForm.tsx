@@ -335,7 +335,6 @@ const ApplicationForm = () => {
                   id="salary"
                   name="salary"
                   value={formData.salary}
-                  required
                   onChange={handleChange}
                   className="form-input"
                   placeholder="e.g. $120,000 - $150,000"

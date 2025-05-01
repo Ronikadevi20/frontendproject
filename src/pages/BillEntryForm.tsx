@@ -366,7 +366,7 @@ const BillEntryForm = () => {
                         <Button variant="outline" onClick={() => navigate('/vault')}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} data-testid="save-bill">
                             {isLoading ? 'Saving...' : 'Save Bill'}
                         </Button>
                     </div>

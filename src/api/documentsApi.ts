@@ -1,7 +1,6 @@
 // documentsApi.ts
 import api from "./client";
 import { handleApiError } from "./client";
-import axios from "axios";
 
 export type ExpiryStatus = 'active' | 'expired' | 'expiring_soon';
 
@@ -110,33 +109,16 @@ export const documentsApi = {
   /**
    * Update document metadata
    */
-  update: async (id: string, data: any): Promise<DocumentEntry> => {
+  update: async (id: string, data: DocumentUpdateDTO): Promise<DocumentEntry> => {
     try {
-      const formData = new FormData();
-      formData.append("title", data.title);
-      if (data.description !== undefined) formData.append("description", data.description ?? "");
-      if (data.expiry_date !== undefined) formData.append("expiry_date", data.expiry_date ?? "");
-
-      if (data.file) {
-        formData.append("file", data.file); // attach new file
-      } else {
-        formData.append("keep_existing_file", "true"); // let backend keep the file
-      }
-
-      const response = await axios.patch(`/api/documents/${id}/`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
-
+      const response = await api.patch<DocumentEntry>(`/api/documents/${id}/`, data);
+      if (!response.data) throw new Error("Update failed");
       return response.data;
     } catch (error) {
-      handleApiError(error, "Failed to update document");
+      console.log(error)
       throw error;
     }
   },
-
 
   /**
    * Delete a document (soft delete)
@@ -169,21 +151,17 @@ export const documentsApi = {
    */
   download: async (id: string): Promise<Blob> => {
     try {
-      const token = localStorage.getItem("accessToken");
-
-      const response = await axios.get(`/api/documents/${id}/download/`, {
-        responseType: "blob",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await api.get<Blob>(`/api/documents/${id}/download/`, {
+        responseType: 'blob'
       });
-
+      if (!response.data) throw new Error("No file data received");
       return response.data;
     } catch (error) {
       handleApiError(error, "Failed to download document");
       throw error;
     }
   },
+
   /**
    * Get document statistics
    */

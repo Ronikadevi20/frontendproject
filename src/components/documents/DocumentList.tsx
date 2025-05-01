@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DocumentEntry } from "@/api/documentsApi";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +31,7 @@ interface Document {
 }
 
 interface DocumentListProps {
-  documents: Document[];
+  documents: DocumentEntry[]; // ✅ Use real type
 }
 
 const DocumentList = ({ documents }: DocumentListProps) => {

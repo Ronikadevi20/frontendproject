@@ -18,7 +18,7 @@ interface ApiResponse<T> {
 }
 
 const getAuthToken = (): string | null => {
-  return sessionStorage.getItem("auth_token");
+  return sessionStorage.getItem("auth_token") || localStorage.getItem("accessToken");
 };
 
 const createHeaders = (includeAuth: boolean = true): Record<string, string> => {

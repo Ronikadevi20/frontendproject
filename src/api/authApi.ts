@@ -73,7 +73,8 @@ export const authApi = {
 
   // Confirm and complete the password reset
   confirmPasswordReset: (data: PasswordResetConfirmation) =>
-    api.post<{ message: string }>("/api/auth/change-password", data, false),
+    api.post<{ message: string }>("/api/auth/change-password", data), // ✅ default = true (authenticated)
+
 
   // Set decoy password
   setDecoyPassword: (data: DecoyPasswordData) =>

@@ -322,9 +322,44 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+      {/* AI Tools Section */}
+      <section className="py-20 px-4 bg-EncryptEase-50/30">
+        <div className="app-container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">AI Tools to Boost Your Success</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Unlock the power of AI to practice interviews, generate documents, and stay ahead in your job search.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white shadow-md rounded-xl p-6 text-center">
+              <div className="text-4xl mb-4"></div>
+              <h3 className="font-semibold text-lg mb-2">AI Interview Practice</h3>
+              <p className="text-gray-600 text-sm">
+                Simulate real interviews with role-based questions, feedback, and voice-to-text AI evaluation.
+              </p>
+            </div>
+            <div className="bg-white shadow-md rounded-xl p-6 text-center">
+              <div className="text-4xl mb-4"></div>
+              <h3 className="font-semibold text-lg mb-2">Resume & Cover Builder</h3>
+              <p className="text-gray-600 text-sm">
+                Generate tailored resumes and cover letters based on job descriptions; edit and export with ease.
+              </p>
+            </div>
+            <div className="bg-white shadow-md rounded-xl p-6 text-center">
+              <div className="text-4xl mb-4"></div>
+              <h3 className="font-semibold text-lg mb-2">Follow-Up Generator</h3>
+              <p className="text-gray-600 text-sm">
+                Use AI to write professional follow-up emails after interviews or application submissions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Features Carousel - Mobile Friendly */}
-      <section className="py-20 px-4 bg-EncryptEase-50/30">
+      <section className="py-20 px-4 bg-white">
         <div className="app-container">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Explore More Features</h2>
@@ -360,9 +395,9 @@ const LandingPage = () => {
                       <div className="bg-EncryptEase-100 p-3 rounded-full w-16 h-16 flex items-center justify-center mb-4">
                         <BarChart className="h-8 w-8 text-EncryptEase-600" />
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2 text-center">Insights & Analytics</h3>
-                      <p className="text-gray-600 text-center">
-                        Get insights on application trends and response rates
+                      <h3 className="font-semibold text-lg mb-2">AI Tools</h3>
+                      <p className="text-gray-600 text-sm">
+                        Use AI to practice interviews, generate resumes, write follow-ups, and more — all in one smart workspace.
                       </p>
                     </div>
                   </CardContent>
@@ -560,9 +595,9 @@ const LandingPage = () => {
 
             {/* FAQ Item 4 */}
             <div className="glass-card p-6 opacity-0 animate-on-scroll hover-card-effect">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Can I export my data?</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">How does EncryptEase use AI to help with my job search?</h3>
               <p className="text-gray-600">
-                Yes, you can export your job application data and password information in multiple formats for your records at any time.
+                EncryptEase offers a suite of AI-powered tools to boost your job search including interview simulation with real-time feedback, resume and cover letter generation based on job descriptions.
               </p>
             </div>
           </div>

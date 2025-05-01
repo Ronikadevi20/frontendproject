@@ -288,7 +288,7 @@ export default function InterviewPracticePage() {
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => navigate(`/job/${jobId}`)}
+                            onClick={() => navigate('/ai-tools/interview-prep')}
                         >
                             <X className="h-4 w-4" />
                         </Button>
@@ -423,6 +423,7 @@ export default function InterviewPracticePage() {
                                     type="submit"
                                     size="icon"
                                     disabled={!input.trim() || isLoading}
+                                    aria-label="Send message"
                                 >
                                     <Send className="h-4 w-4" />
                                 </Button>

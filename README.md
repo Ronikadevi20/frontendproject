@@ -1,74 +1,87 @@
-# Welcome to your Lovable project
+EncryptEase Frontend
 
-## Project info
+Welcome to the frontend repository of EncryptEase this is your secure, all-in-one life management platform for students and professionals. This frontend is built using React + TypeScript, with Vite, TailwindCSS, and integrates seamlessly with the Django backend API.
 
-**URL**: https://lovable.dev/projects/e6370acc-4939-4ed1-aedd-c1dceea4ca21
+🛠️ Tech Stack
 
-## How can I edit this code?
+React 18 (with Hooks and Functional Components)
 
-There are several ways of editing your application.
+Vite (Blazing fast dev/build tool)
 
-**Use Lovable**
+TypeScript
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e6370acc-4939-4ed1-aedd-c1dceea4ca21) and start prompting.
+TailwindCSS
 
-Changes made via Lovable will be committed automatically to this repo.
+Shadcn/UI for component styling
 
-**Use your preferred IDE**
+React Router DOM for routing
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Sonner for toast notifications
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Axios for API calls
 
-Follow these steps:
+📁 Project Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+src/
+├── api/                # Axios API utilities
+├── components/         # Shared UI components (buttons, modals, layout, etc.)
+├── hooks/              # Custom hooks
+├── lib/                # Utility functions
+├── pages/              # All page-level components (views)
+├── types/              # Shared TypeScript types
+├── App.tsx             # Root component
+├── main.tsx            # Entry point
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+🚀 Getting Started
 
-# Step 3: Install the necessary dependencies.
-npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+1. Install Dependencies
+
+npm install
+
+2. Create Environment Variables
+
+Create a .env file in the root with the following:
+
+VITE_API_URL=
+
+Replace the URL with your deployed or local Django backend.
+
+3. Run the App Locally
+
 npm run dev
-```
 
-**Edit a file directly in GitHub**
+Open http://localhost:5173 to see the app.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+🧪 Running Tests
 
-**Use GitHub Codespaces**
+Vitest + React Testing Library:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+npm run test
 
-## What technologies are used for this project?
+Coverage reports can be generated with:
 
-This project is built with:
+npm run coverage
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Test coverage is actively maintained for both unit and integration tests, especially across AI tools, password vault, and job applications.
 
-## How can I deploy this project?
+Features Implemented
 
-Simply open [Lovable](https://lovable.dev/projects/e6370acc-4939-4ed1-aedd-c1dceea4ca21) and click on Share -> Publish.
+Secure Login / Signup / MFA OTP
 
-## Can I connect a custom domain to my Lovable project?
+AI Tools (Follow-up Emails, Resume/Cover Letters, Interview Prep)
 
-Yes it is!
+Documents Vault (Upload, Edit, Replace)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Bill Tracker
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-# frontendproject
+Job Application Tracker (Attachments, Cover Letter, Follow-Ups)
+
+Password Vault (AI Category + Strength Meter)
+Smart Reminders & Dashboard
+Build for Production
+
+npm run build
+
+
+

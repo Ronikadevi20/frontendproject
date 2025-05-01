@@ -167,7 +167,7 @@ const InterviewPrep = () => {
                                                 {new Date(app.deadline_date).toLocaleDateString()}
                                             </p>
                                         )}
-                                        <div className="mt-3">
+                                        <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-3 sm:space-y-0">
                                             {app.is_prepared ? (
                                                 <Button variant="outline" onClick={async () => {
                                                     setSelected(app);
@@ -185,17 +185,15 @@ const InterviewPrep = () => {
                                                     Prepare Now
                                                 </Button>
                                             )}
-                                            {isPrepared && (
-                                                <Button
-                                                    className="bg-blue-600 text-white"
-                                                    onClick={() => {
-                                                        setPracticeJobId(app.id);        // 👈 only set this
-                                                        setPracticeModalOpen(true);      // ✅ don't call setSelected(app) here
-                                                    }}
-                                                >
-                                                    🧠 Practice with AI
-                                                </Button>
-                                            )}
+                                            <Button
+                                                className="bg-black text-white hover:bg-black w-full sm:w-auto"
+                                                onClick={() => {
+                                                    setPracticeJobId(app.id);
+                                                    setPracticeModalOpen(true);
+                                                }}
+                                            >
+                                                Practice with AI
+                                            </Button>
                                         </div>
                                     </div>
                                 );
@@ -326,14 +324,16 @@ const InterviewPrep = () => {
                     </div>
                 )}
             </div>
-            {practiceJobId && (
-                <StartInterviewPracticeModal
-                    isOpen={practiceModalOpen}
-                    onClose={() => setPracticeModalOpen(false)}
-                    jobId={String(practiceJobId)}
-                />
-            )}
-        </PageContainer>
+            {
+                practiceJobId && (
+                    <StartInterviewPracticeModal
+                        isOpen={practiceModalOpen}
+                        onClose={() => setPracticeModalOpen(false)}
+                        jobId={String(practiceJobId)}
+                    />
+                )
+            }
+        </PageContainer >
     );
 };
 

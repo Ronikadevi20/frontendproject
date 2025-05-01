@@ -87,18 +87,10 @@ const DocumentsPage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary" />
           </div>
         ) : (
-
           <DocumentList
-            documents={filteredDocuments.map(doc => ({
-              id: String(doc.id),
-              title: doc.title,
-              type: doc.file_type,
-              size: `${(doc.file_size / (1024 * 1024)).toFixed(2)} MB`,
-              uploadDate: doc.created_at,
-              expiryDate: doc.expiry_date || null,
-            }))}
+            documents={filteredDocuments as any}
+          // onDelete={() => documentsApi.list()} // Refresh after delete
           />
-
         )}
       </div>
     </PageContainer>

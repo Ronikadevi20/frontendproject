@@ -22,6 +22,7 @@ const PasswordListItem = ({
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() => toggleVisibility(password.id)}
+                        aria-label="Toggle visibility"
                     >
                         {isVisible ? (
                             <EyeOff className="h-4 w-4" />
@@ -67,3 +68,4 @@ const PasswordListItem = ({
         </div>
     );
 };
+export default PasswordListItem;

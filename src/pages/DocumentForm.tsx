@@ -26,8 +26,6 @@ const DocumentForm = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
-  const [pendingReplaceFile, setPendingReplaceFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (isEditMode && id) {
@@ -59,18 +57,12 @@ const DocumentForm = () => {
 
   const handleFileSelection = (files: FileList | null) => {
     if (files && files.length > 0) {
-      const selected = files[0];
-
+      setFile(files[0]);
       if (isEditMode) {
-        // Ask before replacing
-        setPendingReplaceFile(selected);
-        setShowReplaceConfirm(true);
-      } else {
-        setFile(selected); // Create mode, no popup
+        setReplaceFile(true);
       }
     }
   };
-
 
   const clearFileSelection = () => {
     setFile(null);
@@ -125,12 +117,12 @@ const DocumentForm = () => {
 
         console.log("update", result)
         if (result) {
-          toast({
-            title: 'Document updated',
-            description: replaceFile && file
-              ? 'Your document and file have been updated'
-              : 'Your document details have been updated'
-          });
+          // toast({
+          //   title: 'Document updated',
+          //   description: replaceFile && file
+          //     ? 'Your document and file have been updated'
+          //     : 'Your document details have been updated'
+          // });
           navigate("/vault");
         }
       } else if (!isEditMode && file) {
@@ -253,40 +245,6 @@ const DocumentForm = () => {
                         </div>
                       </div>
                     </div>
-                    {showReplaceConfirm && (
-                      <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-                        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                          <h2 className="text-lg font-semibold mb-4">Confirm File Replacement</h2>
-                          <p className="text-sm text-muted-foreground">
-                            Are you sure you want to replace the current document with{" "}
-                            <strong>{pendingReplaceFile?.name}</strong>?
-                          </p>
-
-                          <div className="flex justify-end gap-2 mt-6">
-                            <Button
-                              variant="ghost"
-                              onClick={() => {
-                                setShowReplaceConfirm(false);
-                                setPendingReplaceFile(null);
-                              }}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                setFile(pendingReplaceFile);
-                                setReplaceFile(true);
-                                setPendingReplaceFile(null);
-                                setShowReplaceConfirm(false);
-                              }}
-                            >
-                              Yes, Replace
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
 
                     {/* File replacement option */}
                     <div className="flex items-center space-x-2 mt-2">

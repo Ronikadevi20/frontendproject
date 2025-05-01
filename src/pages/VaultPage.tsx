@@ -375,7 +375,7 @@ const VaultPage = () => {
                     <TabsList className="mb-4">
                         {/* <TabsTrigger value="all">All Items</TabsTrigger> */}
                         <TabsTrigger value="passwords">Passwords</TabsTrigger>
-                        <TabsTrigger value="bills">Bills</TabsTrigger>
+                        <TabsTrigger value="bills" data-testid="tab-bills">Bills</TabsTrigger>
                         <TabsTrigger value="documents">Documents</TabsTrigger>
                     </TabsList>
 
@@ -420,7 +420,7 @@ const VaultPage = () => {
                     </TabsContent>
 
                     <TabsContent value="bills" className="mt-0">
-                        <BillsTable
+                        <BillsTable data-testid="sort-username"
                             bills={filteredBills}
                             handleDelete={handleDelete}
                             sortField={sortField}
