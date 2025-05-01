@@ -64,7 +64,7 @@ const ForgotPasswordPage = () => {
     const data = { "email": email }
 
     try {
-      const response = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/request-password-reset', data, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/request-password-reset`, data, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -106,7 +106,7 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-      const response = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/reset-password', data, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, data, {
         headers: {
           'Content-Type': 'application/json',
         }
