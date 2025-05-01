@@ -64,218 +64,218 @@ const ForgotPasswordPage = () => {
     const data = { "email": email }
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/request-password-reset`, data, {
+      const response = await axios.post('VITE_API_URL=https:/encryptease-backend-production.up.railway.app/api/auth/request-password-reset', data, {
         headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-      if (response.data.message) {
-        toast.success('Verification code sent to your email');
-        setStep(Step.VERIFY);
+        'Content-Type': 'application/json',
       }
-    } catch (error) {
-      toast.error('Failed to send verification code. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (otp: any) => {
-    console.log(otp)
-    setOtp(otp)
-    setStep(Step.RESET)
-  };
-
-  const handleResendOtp = () => {
-    toast.success('Verification code resent to your email');
-  };
-
-  const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validatePassword()) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const data = {
-      'email': email,
-      'code': otp,
-      'newPassword': newPassword
-    }
-
-    try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/reset-password`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
       });
+    if (response.data.message) {
+      toast.success('Verification code sent to your email');
+      setStep(Step.VERIFY);
+    }
+  } catch (error) {
+    toast.error('Failed to send verification code. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-      console.log(response)
+const handleVerifyOtp = async (otp: any) => {
+  console.log(otp)
+  setOtp(otp)
+  setStep(Step.RESET)
+};
 
-      if (response.status === 200) {
-        toast.success('Password reset successfully!');
-        setStep(Step.SUCCESS);
-      } else {
-        toast.error('Failed to reset password. Please try again.');
+const handleResendOtp = () => {
+  toast.success('Verification code resent to your email');
+};
+
+const handleResetPassword = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  if (!validatePassword()) {
+    return;
+  }
+
+  setIsLoading(true);
+
+  const data = {
+    'email': email,
+    'code': otp,
+    'newPassword': newPassword
+  }
+
+  try {
+    const response = await axios.post('VITE_API_URL=https:/encryptease-backend-production.up.railway.app/api/auth/reset-password', data, {
+      headers: {
+        'Content-Type': 'application/json',
       }
-    } catch (error) {
+    });
+
+    console.log(response)
+
+    if (response.status === 200) {
+      toast.success('Password reset successfully!');
+      setStep(Step.SUCCESS);
+    } else {
       toast.error('Failed to reset password. Please try again.');
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (error) {
+    toast.error('Failed to reset password. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-  return (
-    <PageContainer>
-      <div className="flex justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md animate-fade-in">
-          <div className="glass-card p-8">
-            {step === Step.REQUEST && (
-              <>
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Forgot Password</h2>
-                  <p className="mt-2 text-gray-600">Enter your email to receive a reset link</p>
-                </div>
-
-                <form onSubmit={handleRequestReset} className="space-y-6">
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={`form-input ${errors.email ? 'border-red-500' : ''}`}
-                      placeholder="john@example.com"
-                    />
-                    {errors.email && (
-                      <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                    )}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Sending..." : "Send Reset Code"}
-                  </Button>
-
-                  <div className="text-center mt-4">
-                    <Link to="/login" className="text-sm text-EncryptEase-600 hover:text-EncryptEase-700">
-                      Back to Login
-                    </Link>
-                  </div>
-                </form>
-              </>
-            )}
-
-            {step === Step.VERIFY && (
-              <OtpVerification
-                email={email}
-                onVerify={handleVerifyOtp}
-                onResend={handleResendOtp}
-                onCancel={() => setStep(Step.REQUEST)}
-              />
-            )}
-
-            {step === Step.RESET && (
-              <>
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-900">Reset Password</h2>
-                  <p className="mt-2 text-gray-600">Create a new password for your account</p>
-                </div>
-
-                <form onSubmit={handleResetPassword} className="space-y-6">
-                  {/* New Password Input */}
-                  <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      New Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="newPassword"
-                        type={showPassword ? 'text' : 'password'}
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        className={`form-input pr-10 ${errors.newPassword ? 'border-red-500' : ''}`}
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
-                      >
-                        {showPassword ? 'Hide' : 'Show'}
-                      </button>
-                    </div>
-                    {errors.newPassword && (
-                      <p className="mt-1 text-sm text-red-600">{errors.newPassword}</p>
-                    )}
-                  </div>
-
-                  {/* Confirm Password Input */}
-                  <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                      Confirm New Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        id="confirmPassword"
-                        type={showConfirmPassword ? 'text' : 'password'}
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`form-input pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                        placeholder="••••••••"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
-                      >
-                        {showConfirmPassword ? 'Hide' : 'Show'}
-                      </button>
-                    </div>
-                    {errors.confirmPassword && (
-                      <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
-                    )}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Resetting..." : "Reset Password"}
-                  </Button>
-                </form>
-              </>
-            )}
-
-            {step === Step.SUCCESS && (
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful</h2>
-                <p className="text-gray-600 mb-6">Your password has been updated successfully.</p>
-                <Button asChild className="w-full">
-                  <Link to="/login">Return to Login</Link>
-                </Button>
+return (
+  <PageContainer>
+    <div className="flex justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md animate-fade-in">
+        <div className="glass-card p-8">
+          {step === Step.REQUEST && (
+            <>
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-gray-900">Forgot Password</h2>
+                <p className="mt-2 text-gray-600">Enter your email to receive a reset link</p>
               </div>
-            )}
-          </div>
+
+              <form onSubmit={handleRequestReset} className="space-y-6">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`form-input ${errors.email ? 'border-red-500' : ''}`}
+                    placeholder="john@example.com"
+                  />
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Sending..." : "Send Reset Code"}
+                </Button>
+
+                <div className="text-center mt-4">
+                  <Link to="/login" className="text-sm text-EncryptEase-600 hover:text-EncryptEase-700">
+                    Back to Login
+                  </Link>
+                </div>
+              </form>
+            </>
+          )}
+
+          {step === Step.VERIFY && (
+            <OtpVerification
+              email={email}
+              onVerify={handleVerifyOtp}
+              onResend={handleResendOtp}
+              onCancel={() => setStep(Step.REQUEST)}
+            />
+          )}
+
+          {step === Step.RESET && (
+            <>
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-gray-900">Reset Password</h2>
+                <p className="mt-2 text-gray-600">Create a new password for your account</p>
+              </div>
+
+              <form onSubmit={handleResetPassword} className="space-y-6">
+                {/* New Password Input */}
+                <div>
+                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="newPassword"
+                      type={showPassword ? 'text' : 'password'}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className={`form-input pr-10 ${errors.newPassword ? 'border-red-500' : ''}`}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                    >
+                      {showPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                  {errors.newPassword && (
+                    <p className="mt-1 text-sm text-red-600">{errors.newPassword}</p>
+                  )}
+                </div>
+
+                {/* Confirm Password Input */}
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className={`form-input pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                    >
+                      {showConfirmPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Resetting..." : "Reset Password"}
+                </Button>
+              </form>
+            </>
+          )}
+
+          {step === Step.SUCCESS && (
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full mx-auto flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Successful</h2>
+              <p className="text-gray-600 mb-6">Your password has been updated successfully.</p>
+              <Button asChild className="w-full">
+                <Link to="/login">Return to Login</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
-    </PageContainer>
-  );
+    </div>
+  </PageContainer>
+);
 };
 
 export default ForgotPasswordPage;

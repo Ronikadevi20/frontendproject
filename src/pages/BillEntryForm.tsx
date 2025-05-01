@@ -208,7 +208,7 @@ const BillEntryForm = () => {
 
                 console.log(response)
             } else {
-                response = await axios.post(`${import.meta.env.VITE_API_URL}/bills/`, formData, {
+                response = await axios.post('VITE_API_URL=https:/encryptease-backend-production.up.railway.app/api/auth/bills/', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                         'Authorization': `Bearer ${sessionStorage.getItem("auth_token")}`
