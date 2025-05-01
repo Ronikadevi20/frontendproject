@@ -49,7 +49,11 @@ export interface DecoyPasswordData {
 export const authApi = {
   // Register a new user
   signup: (data: SignupData) =>
-    api.post<{ message: string, email: string }>("/api/auth/register", data, false),
+    api.post<{ message: string, email: string }>(
+      `${import.meta.env.VITE_API_URL}/auth/register`,
+      data,
+      false
+    ),
 
   // Verify the OTP code sent after signup
   verifySignupOtp: (data: OtpVerificationData) =>
