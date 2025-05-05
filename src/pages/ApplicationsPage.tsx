@@ -180,10 +180,10 @@ const ApplicationsPage = () => {
     switch (status) {
       case 'applied': return 'bg-blue-500';
       case 'interviewing': return 'bg-yellow-500';
-      case 'offered': return 'bg-green-500';
       case 'accepted': return 'bg-green-600';
       case 'rejected': return 'bg-red-500';
       case 'declined': return 'bg-red-600';
+      case 'offered': return 'bg-green-500';
       default: return 'bg-gray-500';
     }
   };
