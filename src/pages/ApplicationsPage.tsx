@@ -90,6 +90,10 @@ const ApplicationsPage = () => {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDecoyMode, setIsDecoyMode] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true); // for initial page load
+  const [deleting, setDeleting] = useState<boolean>(false); // for delete action
+  const [refreshing, setRefreshing] = useState<boolean>(false); // for refresh after adding new app
+
 
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
@@ -98,23 +102,41 @@ const ApplicationsPage = () => {
       return;
     }
 
-    // Check for decoy mode
     const isDecoyLogin = sessionStorage.getItem('is_decoy_login') === 'true';
     setIsDecoyMode(isDecoyLogin);
 
+    const shouldRefresh = sessionStorage.getItem('refresh_applications') === 'true';
+    if (shouldRefresh) {
+      setRefreshing(true);
+      sessionStorage.removeItem('refresh_applications');
+    }
+
     const loadApplications = async () => {
-      if (isDecoyLogin) {
-        // Load dummy data in decoy mode
-        setApplications(dummyApplications);
+      if (shouldRefresh) {
+        setRefreshing(true);
       } else {
-        // Load real data in regular mode
-        const data = await applicationApi.list();
-        setApplications(data as Application[]);
+        setLoading(true);
+      }
+
+      try {
+        if (isDecoyLogin) {
+          setApplications(dummyApplications);
+        } else {
+          const data = await applicationApi.list();
+          setApplications(data as Application[]);
+        }
+      } finally {
+        if (shouldRefresh) {
+          setRefreshing(false);
+        } else {
+          setLoading(false);
+        }
       }
     };
 
     loadApplications();
   }, [navigate]);
+
 
   const handleSort = (field: 'company' | 'job_title' | 'status' | 'applied_date') => {
     if (sortField === field) {
@@ -132,14 +154,12 @@ const ApplicationsPage = () => {
 
   const confirmDelete = async () => {
     if (!selectedApp) return;
-
+    setDeleting(true);
     try {
       if (isDecoyMode) {
-        // Handle delete in decoy mode (just update the UI)
         setApplications(applications.filter(app => app.id !== selectedApp.id));
         toast.success('Application moved to trash.');
       } else {
-        // Handle delete in regular mode
         const success = await applicationApi.delete(selectedApp.id);
         if (success) {
           const updatedApplications = await applicationApi.list();
@@ -150,9 +170,11 @@ const ApplicationsPage = () => {
     } catch (error) {
       toast.error('Failed to delete application');
     } finally {
+      setDeleting(false);
       setIsDeleteDialogOpen(false);
     }
   };
+
 
   const getStatusColor = (status: Status) => {
     switch (status) {
@@ -242,7 +264,11 @@ const ApplicationsPage = () => {
 
         {/* Applications table */}
         <div className="overflow-x-auto glass-card animate-slide-in">
-          {applications.length > 0 ? (
+          {(loading || refreshing) ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-800" />
+            </div>
+          ) : applications.length > 0 ? (
             <table className="w-full">
               <thead className="bg-gray-50 text-left">
                 <tr>
