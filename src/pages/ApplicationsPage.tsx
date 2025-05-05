@@ -265,8 +265,9 @@ const ApplicationsPage = () => {
         {/* Applications table */}
         <div className="overflow-x-auto glass-card animate-slide-in">
           {(loading || refreshing) ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-800" />
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+              <p className="ml-4 text-gray-600">Loading Job Applications</p>
             </div>
           ) : applications.length > 0 ? (
             <table className="w-full">
@@ -417,8 +418,13 @@ const ApplicationsPage = () => {
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="button" variant="destructive" onClick={confirmDelete}>
-              Move to Trash
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deleting}
+            >
+              {deleting ? 'Deleting...' : 'Move to Trash'}
             </Button>
           </DialogFooter>
         </DialogContent>

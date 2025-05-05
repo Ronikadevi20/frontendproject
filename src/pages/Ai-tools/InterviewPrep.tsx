@@ -245,7 +245,7 @@ const InterviewPrep = () => {
                         </div>
 
                         <h2 className="text-xl font-semibold mb-4">
-                            Interview Prep for {selected.job_title} @ {selected.company}
+                            {prepStatus === 'assessment' ? 'Assessment Preparation' : 'Interview Preparation'} for {selected.job_title} @ {selected.company}
                         </h2>
 
 

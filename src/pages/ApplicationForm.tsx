@@ -248,11 +248,11 @@ const ApplicationForm = () => {
                 >
                   <option value="applied">Applied</option>
                   <option value="interviewing">Interview</option>
-                  <option value="offered">Offer Received</option>
                   <option value="assessment">Assessment</option>
                   <option value="accepted">Accepted</option>
                   <option value="rejected">Rejected</option>
                   <option value="declined">Declined</option>
+                  <option value="offered">Offer Received</option>
                 </select>
               </div>
 

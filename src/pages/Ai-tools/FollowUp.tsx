@@ -176,14 +176,18 @@ const FollowUp = () => {
                                     </div>
                                     <p className="text-sm text-gray-600 mb-4">Applied on: {new Date(job.applied_date).toLocaleDateString()}</p>
                                     <p className="text-sm text-gray-600">Status: {job.status}</p>
-
-                                    {job.has_follow_up_draft ? (
+                                    {generatingMap[job.id] ? (
+                                        <Button disabled className="flex items-center gap-2 px-4 py-2 text-sm">
+                                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Generating...
+                                        </Button>
+                                    ) : job.has_follow_up_draft ? (
                                         <Button variant="default" className="px-4 py-2 text-sm" onClick={() => handleOpenDraft(job)}>
                                             View Draft
                                         </Button>
                                     ) : (
-                                        <Button onClick={() => handleOpenAndGenerate(job)} disabled={!!generatingMap[job.id]}>
-                                            {generatingMap[job.id] ? 'Generating...' : 'Generate Email'}
+                                        <Button onClick={() => handleOpenAndGenerate(job)}>
+                                            Generate Email
                                         </Button>
                                     )}
 
