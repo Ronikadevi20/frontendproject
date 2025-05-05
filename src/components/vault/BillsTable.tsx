@@ -2,8 +2,9 @@ import { CreditCard, Edit, Trash2, ArrowUpDown, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { BillEntry } from '@/api/billsApi';
+import billsApi, { BillEntry } from '@/api/billsApi';
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface BillsTableProps {
     bills: BillEntry[];
@@ -23,7 +24,16 @@ const BillsTable = ({
     navigate
 }: BillsTableProps) => {
     const [isDecoyMode, setIsDecoyMode] = useState(false);
-    const [displayedBills, setDisplayedBills] = useState<BillEntry[]>(bills);
+    // const [displayedBills, setDisplayedBills] = useState<BillEntry[]>(bills);
+    const {
+        data: fetchedBills = [],
+        isLoading
+    } = useQuery<BillEntry[], Error>({
+        queryKey: ['bills'],
+        queryFn: billsApi.list
+    });
+    const [displayedBills, setDisplayedBills] = useState<BillEntry[]>([]);
+
 
     useEffect(() => {
         const decoyMode = sessionStorage.getItem('is_decoy_login') === 'true';
@@ -65,6 +75,14 @@ const BillsTable = ({
             setDisplayedBills(bills);
         }
     }, [bills]);
+
+    if (isLoading) {
+        return (
+            <div className="text-center py-12 glass-card animate-pulse">
+                <p className="text-lg text-gray-600">Loading bills...</p>
+            </div>
+        );
+    }
 
     if (displayedBills.length === 0) {
         return (
