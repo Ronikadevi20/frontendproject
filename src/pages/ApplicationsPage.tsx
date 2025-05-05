@@ -90,8 +90,7 @@ const ApplicationsPage = () => {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDecoyMode, setIsDecoyMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
+
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
     if (!isAuthenticated) {
@@ -103,62 +102,19 @@ const ApplicationsPage = () => {
     const isDecoyLogin = sessionStorage.getItem('is_decoy_login') === 'true';
     setIsDecoyMode(isDecoyLogin);
 
-    // const loadApplications = async () => {
-    //   if (isDecoyLogin) {
-    //     // Load dummy data in decoy mode
-    //     setApplications(dummyApplications);
-    //   } else {
-    //     // Load real data in regular mode
-    //     const data = await applicationApi.list();
-    //     setApplications(data as Application[]);
-    //   }
-    // };
-    //   const loadApplications = async () => {
-    //     try {
-    //       setIsLoading(true);
-
-    //       if (isDecoyLogin) {
-    //         setApplications(dummyApplications);
-    //       } else {
-    //         const data = await applicationApi.list();
-    //         setApplications(data as Application[]);
-    //       }
-    //     } catch (err) {
-    //       toast.error("Failed to load applications");
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   };
-
-    //   loadApplications();
-    // }, [navigate]);
     const loadApplications = async () => {
-      try {
-        setIsLoading(true);
-
-        let apps: Application[] = [];
-
-        if (isDecoyLogin) {
-          apps = dummyApplications;
-        } else {
-          const data = await applicationApi.list();
-          apps = data as Application[];
-        }
-
-        setApplications(apps);
-
-        // Wait a short tick to ensure render is flushed
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        setIsLoading(false);
-      } catch (err) {
-        toast.error("Failed to load applications");
-        setIsLoading(false); // Ensure fallback in case of error
+      if (isDecoyLogin) {
+        // Load dummy data in decoy mode
+        setApplications(dummyApplications);
+      } else {
+        // Load real data in regular mode
+        const data = await applicationApi.list();
+        setApplications(data as Application[]);
       }
     };
+
     loadApplications();
   }, [navigate]);
-
 
   const handleSort = (field: 'company' | 'job_title' | 'status' | 'applied_date') => {
     if (sortField === field) {
@@ -174,52 +130,29 @@ const ApplicationsPage = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  // const confirmDelete = async () => {
-  //   if (!selectedApp) return;
-
-  //   try {
-  //     if (isDecoyMode) {
-  //       // Handle delete in decoy mode (just update the UI)
-  //       setApplications(applications.filter(app => app.id !== selectedApp.id));
-  //       toast.success('Application moved to trash.');
-  //     } else {
-  //       // Handle delete in regular mode
-  //       const success = await applicationApi.delete(selectedApp.id);
-  //       if (success) {
-  //         const updatedApplications = await applicationApi.list();
-  //         setApplications(updatedApplications as Application[]);
-  //         toast.success('Application moved to trash.');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error('Failed to delete application');
-  //   } finally {
-  //     setIsDeleteDialogOpen(false);
-  //   }
-  // };
   const confirmDelete = async () => {
     if (!selectedApp) return;
-    setDeletingAppId(selectedApp.id); // ⏳ show loader on the correct row
 
     try {
       if (isDecoyMode) {
-        setApplications(apps => apps.filter(app => app.id !== selectedApp.id));
+        // Handle delete in decoy mode (just update the UI)
+        setApplications(applications.filter(app => app.id !== selectedApp.id));
+        toast.success('Application moved to trash.');
       } else {
+        // Handle delete in regular mode
         const success = await applicationApi.delete(selectedApp.id);
         if (success) {
-          const updated = await applicationApi.list();
-          setApplications(updated as Application[]);
+          const updatedApplications = await applicationApi.list();
+          setApplications(updatedApplications as Application[]);
+          toast.success('Application moved to trash.');
         }
       }
-      toast.success('Application moved to trash.');
-    } catch (err) {
+    } catch (error) {
       toast.error('Failed to delete application');
     } finally {
-      setDeletingAppId(null); // 🛑 stop showing loading
       setIsDeleteDialogOpen(false);
     }
   };
-
 
   const getStatusColor = (status: Status) => {
     switch (status) {
@@ -309,12 +242,7 @@ const ApplicationsPage = () => {
 
         {/* Applications table */}
         <div className="overflow-x-auto glass-card animate-slide-in">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-500" />
-              <span className="ml-4 text-gray-600 text-sm">Loading applications...</span>
-            </div>
-          ) : applications.length > 0 ? (
+          {applications.length > 0 ? (
             <table className="w-full">
               <thead className="bg-gray-50 text-left">
                 <tr>
@@ -406,24 +334,12 @@ const ApplicationsPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleDelete(app) }}
                           className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                          disabled={deletingAppId === app.id}
-                          onClick={() => {
-                            if (sessionStorage.getItem('decoy_mode') !== 'true') {
-                              handleDelete(app);
-                            }
-                          }}
                         >
-                          {deletingAppId === app.id ? (
-                            <svg className="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                            </svg>
-                          ) : (
-                            <Trash2 size={16} />
-                          )}
+                          <Trash2 size={16} />
+                          <span className="sr-only">Delete</span>
                         </Button>
-
                       </div>
                     </td>
                   </tr>
