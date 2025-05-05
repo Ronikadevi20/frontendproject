@@ -146,34 +146,17 @@ export default function InterviewPracticePage() {
 
     const startRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-            if (isSafari) {
-                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                const recorder = new Recorder(audioContext);
-                await recorder.init(stream);
-                recorderRef.current = recorder;
-                audioContextRef.current = audioContext;
-                recorder.start();
-                setIsRecording(true);
-                return;
-            }
-
-            let mimeType = '';
-            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-                mimeType = 'audio/webm;codecs=opus';
-            } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-                mimeType = 'audio/webm';
-            } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
-                mimeType = 'audio/ogg;codecs=opus';
-            } else {
-                toast.error("Your browser does not support audio recording.");
-                return;
-            }
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: 16000
+                }
+            });
 
             const mediaRecorder = new MediaRecorder(stream, {
-                mimeType,
-                audioBitsPerSecond: 128000,
+                mimeType: 'audio/webm;codecs=opus',
+                audioBitsPerSecond: 128000
             });
 
             mediaRecorderRef.current = mediaRecorder;
@@ -186,58 +169,65 @@ export default function InterviewPracticePage() {
             };
 
             mediaRecorder.onstop = async () => {
-                stream.getTracks().forEach(track => track.stop());
-                const blob = new Blob(audioChunksRef.current, { type: mimeType });
-                if (blob.size > 10 * 1024 * 1024) {
-                    toast.error("Recording too large (max 10MB)");
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append("audio", blob, "recording.webm");
-
                 try {
+                    stream.getTracks().forEach(track => track.stop());
+
+                    const audioBlob = new Blob(audioChunksRef.current, {
+                        type: 'audio/webm;codecs=opus'
+                    });
+
+                    if (audioBlob.size > 10 * 1024 * 1024) {
+                        toast.error("Recording too large (max 10MB)");
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('audio', audioBlob, 'recording.webm');
+
+                    // Use the API client directly
                     const response = await applicationApi.transcribeAudio(formData);
-                    if (response.transcript) setInput(response.transcript);
-                    else throw new Error("No transcript");
+
+                    if (!response || typeof response !== 'object') {
+                        throw new Error('Invalid response format');
+                    }
+
+                    if ('error' in response) {
+                        throw new Error(response.error || 'Transcription failed');
+                    }
+
+                    if (!response.transcript) {
+                        throw new Error('Empty transcription result');
+                    }
+
+                    setInput(response.transcript);
+
                 } catch (err) {
-                    toast.error("Transcription failed");
+                    console.error('Transcription error:', err);
+                    toast.error(err.message || "Transcription failed. Please try again.");
+                } finally {
+                    setIsRecording(false);
                 }
             };
 
             mediaRecorder.start(1000);
             setIsRecording(true);
-        } catch (err: any) {
-            console.error(err);
-            toast.error("Recording not supported or permission denied");
+
+        } catch (err) {
+            console.error('Recording setup error:', err);
+            if (err.name === 'NotAllowedError') {
+                toast.error("Microphone access denied");
+            } else {
+                toast.error("Failed to start recording");
+            }
+            setIsRecording(false);
         }
     };
-    const stopRecording = async () => {
-        if (isSafari && recorderRef.current) {
-            try {
-                const { blob } = await recorderRef.current.stop();
-                const fixedBlob = new Blob([blob], { type: 'audio/wav' }); // ✅
 
-                const formData = new FormData();
-                formData.append('audio', fixedBlob, 'recording.wav');
-
-                const response = await applicationApi.transcribeAudio(formData);
-                if (response.transcript) setInput(response.transcript);
-                else throw new Error("No transcript");
-            } catch (err) {
-                toast.error("Safari transcription failed");
-                console.error(err);
-            } finally {
-                setIsRecording(false);
-                audioContextRef.current?.close();
-                recorderRef.current = null;
-                audioContextRef.current = null;
-            }
-        } else if (mediaRecorderRef.current) {
+    const stopRecording = () => {
+        if (mediaRecorderRef.current) {
             mediaRecorderRef.current.stop();
         }
     };
-
 
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

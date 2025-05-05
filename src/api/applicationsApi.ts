@@ -443,10 +443,7 @@ export const applicationApi = {
 
     transcribeAudio: async (formData: FormData) => {
         try {
-            const token = sessionStorage.getItem("auth_token");
-            if (!token) {
-                throw new Error("Authentication token missing.");
-            }
+            const token = sessionStorage.getItem("auth_token"); // or fallback if needed
 
             const response = await axios.post(
                 '/api/applications/audio-transcribe/',
@@ -454,20 +451,13 @@ export const applicationApi = {
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
                     },
-                    timeout: 30000,  // optional: set a timeout for slow uploads
                 }
             );
-
-            if (!response.data?.transcript) {
-                throw new Error("Empty or invalid transcription response.");
-            }
-
             return response.data;
         } catch (error: any) {
             console.error("Transcription error:", error.response?.data || error.message);
-            throw new Error(error.response?.data?.error || error.message || "Transcription failed");
+            throw error;
         }
     },
 };
