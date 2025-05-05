@@ -9,6 +9,7 @@ interface SmartRemindersProps {
     upcomingBills: any[];
     dismissedFollowUps: string[];
     onDismissFollowUp: (id: string) => void;
+    isDecoyMode: boolean;
 }
 
 const SmartReminders: React.FC<SmartRemindersProps> = ({
@@ -17,7 +18,8 @@ const SmartReminders: React.FC<SmartRemindersProps> = ({
     weakPasswords,
     upcomingBills,
     dismissedFollowUps,
-    onDismissFollowUp
+    onDismissFollowUp,
+    isDecoyMode
 }) => {
     const [dismissed, setDismissed] = useState<string[]>([]);
 
@@ -110,7 +112,7 @@ const SmartReminders: React.FC<SmartRemindersProps> = ({
                         </div>
                         <div className="flex items-center space-x-2">
                             {rem.url && (
-                                <Button size="sm" variant="outline" onClick={() => location.href = rem.url}>
+                                <Button size="sm" disabled={isDecoyMode} variant="outline" onClick={() => location.href = rem.url}>
                                     {rem.action}
                                 </Button>
                             )}

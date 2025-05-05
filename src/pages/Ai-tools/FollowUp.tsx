@@ -179,7 +179,7 @@ const FollowUp = () => {
 
                                     {job.has_follow_up_draft ? (
                                         <Button variant="default" className="px-4 py-2 text-sm" onClick={() => handleOpenDraft(job)}>
-                                            📄 View Draft
+                                            View Draft
                                         </Button>
                                     ) : (
                                         <Button onClick={() => handleOpenAndGenerate(job)} disabled={!!generatingMap[job.id]}>
@@ -220,7 +220,7 @@ const FollowUp = () => {
                                     </p>
 
                                     <Button variant="default" className="px-4 py-2 text-sm mt-2" onClick={() => handleOpenDraft(job)}>
-                                        📄 View Draft
+                                        View Draft
                                     </Button>
                                 </div>
                             ))

@@ -95,18 +95,18 @@ describe('ResumeViewPage', () => {
 
         expect(await screen.findByText(/My Resume/i)).toBeInTheDocument();
 
-        fireEvent.click(screen.getByText('📋 Copy'));
+        fireEvent.click(screen.getByText('Copy'));
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith('Example resume content');
 
         fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Updated resume content' } });
-        fireEvent.click(screen.getByText(/💾 Save/));
+        fireEvent.click(screen.getByText(/Save/));
 
         await waitFor(() => {
             expect(applicationApi.saveResume).toHaveBeenCalled();
         });
 
-        fireEvent.click(screen.getByText('⬇️ Download PDF'));
-        fireEvent.click(screen.getByText('🔄 Regenerate'));
+        fireEvent.click(screen.getByText('Download PDF'));
+        fireEvent.click(screen.getByText('Regenerate'));
 
         await waitFor(() => {
             expect(applicationApi.regenerateResume).toHaveBeenCalled();

@@ -139,13 +139,13 @@ export default function ResumeViewPage() {
                 />
 
                 <div className="flex gap-3 pt-4">
-                    <Button className="bg-white text-black border border-gray-300" onClick={handleCopy}>📋 Copy</Button>
+                    <Button className="bg-white text-black border border-gray-300" onClick={handleCopy}>Copy</Button>
                     <Button className="bg-white text-black border border-gray-300" onClick={handleSave} disabled={saving}>
-                        {saving ? 'Saving...' : '💾 Save'}
+                        {saving ? 'Saving...' : 'Save'}
                     </Button>
-                    <Button className="bg-white text-black border border-gray-300" onClick={handleDownload}>⬇️ Download PDF</Button>
+                    <Button className="bg-white text-black border border-gray-300" onClick={handleDownload}>Download PDF</Button>
                     <Button className="bg-black text-white" onClick={handleRegenerate} disabled={regenerating}>
-                        {regenerating ? 'Regenerating...' : '🔄 Regenerate'}
+                        {regenerating ? 'Regenerating...' : 'Regenerate'}
                     </Button>
                 </div>
             </div>

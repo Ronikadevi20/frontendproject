@@ -145,7 +145,7 @@ const InterviewPrep = () => {
             <PageContainer>
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-EncryptEase-600" />
-                    <p className="ml-4 text-gray-600">Loading Interview Preparation data</p>
+                    <p className="ml-4 text-gray-600">Loading Interview And Assessment Preparation data</p>
                 </div>
             </PageContainer>
         );
@@ -157,7 +157,7 @@ const InterviewPrep = () => {
                     Interview And Assessment Preparation
                 </h1>
                 <p className="mt-2 text-lg text-gray-600 max-w-2xl">
-                    Your personalized AI coach for acing interviews and assessments. </p>
+                    Your personalized AI coach for acing Interviews and Assessments. </p>
             </div>
             <div className="py-8 px-4 space-y-4">
                 <div className="flex justify-between items-center mb-6">
@@ -250,7 +250,7 @@ const InterviewPrep = () => {
 
 
                         {isLoading ? (
-                            <p className="text-gray-500">Generating prep content...</p>
+                            <p className="text-gray-500">Generating preparation content</p>
                         ) : (
                             <Tabs
                                 defaultValue={prepStatus === 'assessment' ? 'tips' : 'questions'}
