@@ -27,6 +27,8 @@ const FollowUp = () => {
     const [generatingMap, setGeneratingMap] = useState<Record<string, boolean>>({});
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
 
     // const fetchFollowUpJobs = async () => {
     //     const apps = await applicationApi.list();
@@ -161,6 +163,12 @@ const FollowUp = () => {
                 </button>
 
                 <Tabs defaultValue="pending" value={activeTab} onValueChange={(val) => setActiveTab(val as 'pending' | 'sent')}>
+                    {isRefreshing && (
+                        <div className="flex justify-center items-center h-64">
+                            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+                            <p className="ml-4 text-gray-600">Refreshing</p>
+                        </div>
+                    )}
                     <TabsList className="mb-4">
                         <TabsTrigger value="pending">Pending Follow-Ups</TabsTrigger>
                         <TabsTrigger value="sent">Sent Follow-Ups</TabsTrigger>
@@ -238,7 +246,12 @@ const FollowUp = () => {
             {selectedJobId && (
                 <FollowUpModal
                     isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={async () => {
+                        setIsModalOpen(false);
+                        setIsRefreshing(true);
+                        await fetchFollowUpJobs();
+                        setIsRefreshing(false);
+                    }}
                     content={generatedEmail}
                     isLoading={isGenerating}
                     onGenerate={handleGenerateEmail}
