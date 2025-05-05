@@ -42,9 +42,13 @@ export default function InterviewPracticePage() {
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const fixedBlob = new Blob([Blob], { type: 'audio/wav' });
     const recorderRef = useRef<Recorder | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
+    const formData = new FormData();
+    formData.append('audio', fixedBlob, 'recording.wav');
     // Fetch sessions and messages
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -208,13 +212,15 @@ export default function InterviewPracticePage() {
             toast.error("Recording not supported or permission denied");
         }
     };
-
     const stopRecording = async () => {
         if (isSafari && recorderRef.current) {
             try {
                 const { blob } = await recorderRef.current.stop();
+                const fixedBlob = new Blob([blob], { type: 'audio/wav' }); // ✅
+
                 const formData = new FormData();
-                formData.append('audio', blob, 'recording.wav');
+                formData.append('audio', fixedBlob, 'recording.wav');
+
                 const response = await applicationApi.transcribeAudio(formData);
                 if (response.transcript) setInput(response.transcript);
                 else throw new Error("No transcript");
