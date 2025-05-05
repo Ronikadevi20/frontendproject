@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { toast } from 'sonner';
 import { Mic, Send, Copy, RefreshCw, Save, ChevronLeft, X } from 'lucide-react';
+import Recorder from 'recorder-js';
 
 declare global {
     interface Window {
@@ -41,6 +42,8 @@ export default function InterviewPracticePage() {
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
+    const recorderRef = useRef<Recorder | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
     // Fetch sessions and messages
     useEffect(() => {
         const fetchData = async () => {
@@ -142,12 +145,16 @@ export default function InterviewPracticePage() {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             if (isSafari) {
-                toast.error("Safari doesn't support this recording method. Please use Chrome or Firefox.");
-                // Optionally: implement recorder.js fallback here
+                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                const recorder = new Recorder(audioContext);
+                await recorder.init(stream);
+                recorderRef.current = recorder;
+                audioContextRef.current = audioContext;
+                recorder.start();
+                setIsRecording(true);
                 return;
             }
 
-            // Fallback if not supported
             let mimeType = '';
             if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
                 mimeType = 'audio/webm;codecs=opus';
@@ -202,9 +209,25 @@ export default function InterviewPracticePage() {
         }
     };
 
-
-    const stopRecording = () => {
-        if (mediaRecorderRef.current) {
+    const stopRecording = async () => {
+        if (isSafari && recorderRef.current) {
+            try {
+                const { blob } = await recorderRef.current.stop();
+                const formData = new FormData();
+                formData.append('audio', blob, 'recording.wav');
+                const response = await applicationApi.transcribeAudio(formData);
+                if (response.transcript) setInput(response.transcript);
+                else throw new Error("No transcript");
+            } catch (err) {
+                toast.error("Safari transcription failed");
+                console.error(err);
+            } finally {
+                setIsRecording(false);
+                audioContextRef.current?.close();
+                recorderRef.current = null;
+                audioContextRef.current = null;
+            }
+        } else if (mediaRecorderRef.current) {
             mediaRecorderRef.current.stop();
         }
     };

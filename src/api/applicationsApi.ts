@@ -441,10 +441,12 @@ export const applicationApi = {
     // In your API client (applicationsApi.ts)
     // applicationsApi.ts
 
-
     transcribeAudio: async (formData: FormData) => {
         try {
-            const token = sessionStorage.getItem("auth_token"); // or fallback if needed
+            const token = sessionStorage.getItem("auth_token");
+            if (!token) {
+                throw new Error("Authentication token missing.");
+            }
 
             const response = await axios.post(
                 '/api/applications/audio-transcribe/',
@@ -452,57 +454,21 @@ export const applicationApi = {
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
+                    timeout: 30000,  // optional: set a timeout for slow uploads
                 }
             );
+
+            if (!response.data?.transcript) {
+                throw new Error("Empty or invalid transcription response.");
+            }
+
             return response.data;
         } catch (error: any) {
             console.error("Transcription error:", error.response?.data || error.message);
-            throw error;
+            throw new Error(error.response?.data?.error || error.message || "Transcription failed");
         }
     },
-
-
-    // startInterviewSession: async (
-    //     jobId: string,
-    //     interviewType: "phone" | "video" | "formal" | "informal"
-    // ) => {
-    //     const res = await api.post(`/api/applications/${jobId}/start-interview-session/`, {
-    //         interview_type: interviewType,
-    //     });
-    //     return res.data; // { session_id: 123 }
-    // },
-    // answerInterviewQuestion: async (
-    //     jobId: string,
-    //     sessionId: number,
-    //     question: string,
-    //     answer: string
-    // ) => {
-    //     const res = await api.post(`/api/applications/${jobId}/answer-question/`, {
-    //         session_id: sessionId,
-    //         question,
-    //         answer,
-    //     });
-    //     return res.data; // contains question, user_answer, ai_feedback, rating
-    // },
-    // chatWithInterviewBot: async (data: { session_id: number; message: string }) => {
-    //     const res = await api.post('/api/applications/chat-interview-bot/', data);
-    //     return res.data;
-    //   },
-    // getInterviewSessions: async (jobId: number) => {
-    //     const res = await api.get(`/api/applications/${jobId}/sessions/`);
-    //     return res.data;
-    // },
-
-    // getInterviewMessages: async (sessionId: number) => {
-    //     const res = await api.get(`/api/interview-sessions/${sessionId}/messages/`);
-    //     return res.data;
-    // },
-    // ... your existing APIs ...
-
-    /**
-     * Interview Practice APIs
-     */
-
 };
 export default applicationApi;
