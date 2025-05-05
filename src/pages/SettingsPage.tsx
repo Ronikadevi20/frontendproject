@@ -51,7 +51,7 @@ const SettingsPage = () => {
         }
     };
 
-    if (isLoading) {
+    if (isLoading || settingsLoading) {
         return (
             <PageContainer>
                 <div className="flex justify-center items-center h-64">
@@ -61,7 +61,7 @@ const SettingsPage = () => {
             </PageContainer>
         );
     }
-    if (!isLoading && (!user || !settings)) {
+    if (!user || !settings) {
         return (
             <PageContainer>
                 <div className="text-center py-12">
@@ -73,6 +73,7 @@ const SettingsPage = () => {
             </PageContainer>
         );
     }
+
 
     return (
         <AccountSettings user={user} settings={settings} />

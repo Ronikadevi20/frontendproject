@@ -145,10 +145,24 @@ export default function InterviewPracticePage() {
                 }
             });
 
+            let supportedMimeType = '';
+
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                supportedMimeType = 'audio/webm;codecs=opus';
+            } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                supportedMimeType = 'audio/webm';
+            } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+                supportedMimeType = 'audio/ogg;codecs=opus';
+            } else {
+                toast.error('Your browser does not support audio recording.');
+                return;
+            }
+
             const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'audio/webm;codecs=opus',
-                audioBitsPerSecond: 128000
+                mimeType: supportedMimeType,
+                audioBitsPerSecond: 128000,
             });
+
 
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
