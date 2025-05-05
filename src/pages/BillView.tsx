@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, Trash2, CreditCard, ArrowDownCircle, Paperclip } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, CreditCard, ArrowDownCircle, Paperclip, Loader2 } from 'lucide-react';
 import { PageContainer } from '@/components/layout/PageContainer';
 import billsApi, { BillEntry } from '@/api/billsApi';
 import { Download } from 'lucide-react';
@@ -44,7 +44,34 @@ const BillView = () => {
         };
 
         fetchBill();
-    }, [id, navigate]);
+    }, [id]);
+    const handleDownload = async (receiptUrl: string) => {
+        try {
+            const response = await fetch(receiptUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = receiptUrl.split('/').pop() || 'receipt';
+            document.body.appendChild(a);
+
+            if (typeof a.download === 'undefined') {
+                window.open(url, '_blank');
+            } else {
+                a.click();
+            }
+
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        } catch (error) {
+            toast({
+                title: "Download failed",
+                description: "Could not download the receipt",
+                variant: "destructive"
+            });
+        }
+    };
 
     const handleDelete = async () => {
         if (!id) return;
@@ -195,14 +222,26 @@ const BillView = () => {
                                     </p>
                                 </div>
                             )}
-
                             {!bill.is_paid && (
                                 <Button
-                                    onClick={() => navigate(`/bills/edit/${bill.id}?markPaid=true`)}
+                                    onClick={() => {
+                                        setIsLoading(true);
+                                        navigate(`/bills/edit/${bill.id}?markPaid=true`);
+                                    }}
                                     className="w-full md:w-auto"
+                                    disabled={isLoading}
                                 >
-                                    <CreditCard size={18} className="mr-2" />
-                                    Mark as Paid
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                            Paying...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CreditCard size={18} className="mr-2" />
+                                            Mark as Paid
+                                        </>
+                                    )}
                                 </Button>
                             )}
                         </div>
@@ -212,14 +251,14 @@ const BillView = () => {
                                     <Paperclip className="w-4 h-4 text-gray-600" />
                                     <span className="text-sm">{bill.receipt.split('/').pop()}</span>
                                 </div>
-                                <a
-                                    href={bill.receipt}
-                                    download
-                                    className="text-blue-600 hover:text-blue-800"
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => handleDownload(bill.receipt)}
                                     title="Download receipt"
                                 >
-                                    <ArrowDownCircle className="w-5 h-5" />
-                                </a>
+                                    <ArrowDownCircle className="w-5 h-5 text-blue-600 hover:text-blue-800" />
+                                </Button>
+
                             </div>
                         )}
 

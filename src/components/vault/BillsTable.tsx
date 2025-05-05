@@ -24,7 +24,7 @@ const BillsTable = ({
     navigate
 }: BillsTableProps) => {
     const [isDecoyMode, setIsDecoyMode] = useState(false);
-    // const [displayedBills, setDisplayedBills] = useState<BillEntry[]>(bills);
+    const [displayedBills, setDisplayedBills] = useState<BillEntry[]>(bills);
     const {
         data: fetchedBills = [],
         isLoading
@@ -32,8 +32,6 @@ const BillsTable = ({
         queryKey: ['bills'],
         queryFn: billsApi.list
     });
-    const [displayedBills, setDisplayedBills] = useState<BillEntry[]>([]);
-
 
     useEffect(() => {
         const decoyMode = sessionStorage.getItem('is_decoy_login') === 'true';

@@ -50,10 +50,21 @@ const DocumentView = () => {
             const blob = await documentsApi.download(currentDocument.id);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement("a");
+
             a.href = url;
             a.download = currentDocument.file_name;
+
             document.body.appendChild(a);
-            a.click();
+
+            // ✅ Check if the browser supports the download attribute
+            if (typeof a.download === 'undefined') {
+                // Fallback for Safari and others: open in new tab
+                window.open(url, '_blank');
+            } else {
+                a.click(); // Normal download behavior
+            }
+
+            // Cleanup
             window.URL.revokeObjectURL(url);
             a.remove();
         } catch (error) {
