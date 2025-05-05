@@ -150,16 +150,13 @@ export const documentsApi = {
    * Download a document file
    */
   download: async (id: string): Promise<Blob> => {
-    try {
-      const response = await api.get<Blob>(`/api/documents/${id}/download/`, {
-        responseType: 'blob'
-      });
-      if (!response.data) throw new Error("No file data received");
-      return response.data;
-    } catch (error) {
-      handleApiError(error, "Failed to download document");
-      throw error;
+    const response = await fetch(`/api/documents/${id}/download/`);
+
+    if (!response.ok) {
+      throw new Error("Download failed");
     }
+
+    return await response.blob();
   },
 
   /**

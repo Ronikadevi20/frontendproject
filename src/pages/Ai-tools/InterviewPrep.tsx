@@ -17,21 +17,40 @@ const InterviewPrep = () => {
     const [prepCache, setPrepCache] = useState<Record<number, string>>({});
     const [practiceModalOpen, setPracticeModalOpen] = useState(false);
     const [practiceJobId, setPracticeJobId] = useState<number | null>(null);
+    const [isFetching, setIsFetching] = useState(true);
 
     interface InterviewPrepResponse {
         prep_content: string;
         status: 'interviewing' | 'assessment';
     }
+    // useEffect(() => {
+    //     const fetchApps = async () => {
+    //         const all = await applicationApi.list();
+    //         const filtered = all.filter(app =>
+    //             ['interviewing', 'assessment'].includes(app.status.toLowerCase())
+    //         );
+    //         setApplications(filtered);
+    //     };
+    //     fetchApps();
+    // }, []);
     useEffect(() => {
         const fetchApps = async () => {
-            const all = await applicationApi.list();
-            const filtered = all.filter(app =>
-                ['interviewing', 'assessment'].includes(app.status.toLowerCase())
-            );
-            setApplications(filtered);
+            setIsFetching(true);
+            try {
+                const all = await applicationApi.list();
+                const filtered = all.filter(app =>
+                    ['interviewing', 'assessment'].includes(app.status.toLowerCase())
+                );
+                setApplications(filtered);
+            } catch (err) {
+                toast.error("Failed to load applications.");
+            } finally {
+                setIsFetching(false);
+            }
         };
         fetchApps();
     }, []);
+
     const [preparedIds, setPreparedIds] = useState<number[]>([]);
 
     const [prepStatus, setPrepStatus] = useState<'interviewing' | 'assessment' | null>(null);
@@ -121,7 +140,16 @@ const InterviewPrep = () => {
         }
     }
     const [activeTab, setActiveTab] = useState<'questions' | 'answers' | 'tips' | 'notes'>('questions');
-
+    if (isFetching) {
+        return (
+            <PageContainer>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-EncryptEase-600" />
+                    <p className="ml-4 text-gray-600">Loading interview prep data...</p>
+                </div>
+            </PageContainer>
+        );
+    }
     return (
         <PageContainer>
             <div className="py-6">

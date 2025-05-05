@@ -2,8 +2,9 @@ import { Package, Edit, Trash2, ArrowUpDown, Download, Eye } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
-import { DocumentEntry } from '@/api/documentsApi';
+import documentsApi, { DocumentEntry } from '@/api/documentsApi';
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProductsTableProps {
     documents: DocumentEntry[];
@@ -25,8 +26,15 @@ const ProductsTable = ({
     handleDownload
 }: ProductsTableProps) => {
     const [isDecoyMode, setIsDecoyMode] = useState(false);
-    const [displayedDocuments, setDisplayedDocuments] = useState<DocumentEntry[]>(documents);
+    const [displayedDocuments, setDisplayedDocuments] = useState<DocumentEntry[]>([]);
+    const { data: fetchedDocuments = [], isLoading } = useQuery<DocumentEntry[], Error>({
+        queryKey: ['documents'],
+        queryFn: () => documentsApi.list(),  // ← this is the key fix
+    });
 
+    useEffect(() => {
+        setDisplayedDocuments(fetchedDocuments);
+    }, [fetchedDocuments]);
     useEffect(() => {
         const decoyMode = sessionStorage.getItem('is_decoy_login') === 'true';
         setIsDecoyMode(decoyMode);
@@ -85,7 +93,13 @@ const ProductsTable = ({
             setDisplayedDocuments(documents);
         }
     }, [documents]);
-
+    if (isLoading) {
+        return (
+            <div className="text-center py-12 glass-card animate-pulse">
+                <p className="text-lg text-gray-600">Loading documents...</p>
+            </div>
+        );
+    }
     if (displayedDocuments.length === 0) {
         return (
             <div className="text-center py-12 glass-card">

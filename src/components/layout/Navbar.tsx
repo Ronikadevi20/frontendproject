@@ -6,11 +6,6 @@ import { Button } from '@/components/ui/button';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const [isDecoyMode, setIsDecoyMode] = useState(false);
-
-  useEffect(() => {
-    setIsDecoyMode(sessionStorage.getItem('is_decoy_login') === 'true');
-  }, []);
 
   const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
   const isLandingPage = location.pathname === '/';
@@ -56,13 +51,9 @@ const Navbar = () => {
               <Link to="/applications" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
                 Job Applications
               </Link>
-              {isDecoyMode ? (
-                <span className="text-gray-400 cursor-not-allowed">AI Tools</span>
-              ) : (
-                <Link to="/Ai-tools" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
-                  AI Tools
-                </Link>
-              )}
+              <Link to="/AItools" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
+                AI Tools
+              </Link>
               <Link to="/vault" className="text-gray-600 hover:text-EncryptEase-700 transition-colors">
                 Vault
               </Link>

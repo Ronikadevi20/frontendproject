@@ -37,6 +37,7 @@ const ResumeBuilder = () => {
     const [showModal, setShowModal] = useState(false);
     const [generationType, setGenerationType] = useState<'resume' | 'cover'>('resume');
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleBuildClick = (type: 'resume' | 'cover') => {
         setGenerationType(type);
@@ -95,16 +96,41 @@ const ResumeBuilder = () => {
         }
     };
 
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const data = await applicationApi.listResumes();
+    //         const coverData = await applicationApi.listCover();
+    //         setResumes(data);
+    //         setCoverLetters(coverData);
+    //     };
+    //     fetchData();
+    // }, []);
     useEffect(() => {
         const fetchData = async () => {
-            const data = await applicationApi.listResumes();
-            const coverData = await applicationApi.listCover();
-            setResumes(data);
-            setCoverLetters(coverData);
+            setIsLoading(true); // start loading
+            try {
+                const data = await applicationApi.listResumes();
+                const coverData = await applicationApi.listCover();
+                setResumes(data);
+                setCoverLetters(coverData);
+            } catch (err) {
+                toast.error("Failed to load resume or cover letter data.");
+            } finally {
+                setIsLoading(false); // stop loading
+            }
         };
         fetchData();
     }, []);
-
+    if (isLoading) {
+        return (
+            <PageContainer>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+                    <p className="ml-4 text-gray-600">Loading resumes and cover letters...</p>
+                </div>
+            </PageContainer>
+        );
+    }
     return (
         <PageContainer>
             <div className="py-6">

@@ -224,24 +224,12 @@ const BillView = () => {
                             )}
                             {!bill.is_paid && (
                                 <Button
-                                    onClick={() => {
-                                        setIsLoading(true);
-                                        navigate(`/bills/edit/${bill.id}?markPaid=true`);
-                                    }}
-                                    className="w-full md:w-auto"
+                                    onClick={handleMarkPaid}
                                     disabled={isLoading}
+                                    className="w-full md:w-auto"
                                 >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                            Paying...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <CreditCard size={18} className="mr-2" />
-                                            Mark as Paid
-                                        </>
-                                    )}
+                                    <CreditCard size={18} className="mr-2" />
+                                    Mark as Paid
                                 </Button>
                             )}
                         </div>

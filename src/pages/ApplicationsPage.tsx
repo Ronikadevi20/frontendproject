@@ -90,7 +90,7 @@ const ApplicationsPage = () => {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDecoyMode, setIsDecoyMode] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
     if (!isAuthenticated) {
@@ -102,14 +102,30 @@ const ApplicationsPage = () => {
     const isDecoyLogin = sessionStorage.getItem('is_decoy_login') === 'true';
     setIsDecoyMode(isDecoyLogin);
 
+    // const loadApplications = async () => {
+    //   if (isDecoyLogin) {
+    //     // Load dummy data in decoy mode
+    //     setApplications(dummyApplications);
+    //   } else {
+    //     // Load real data in regular mode
+    //     const data = await applicationApi.list();
+    //     setApplications(data as Application[]);
+    //   }
+    // };
     const loadApplications = async () => {
-      if (isDecoyLogin) {
-        // Load dummy data in decoy mode
-        setApplications(dummyApplications);
-      } else {
-        // Load real data in regular mode
-        const data = await applicationApi.list();
-        setApplications(data as Application[]);
+      try {
+        setIsLoading(true);
+
+        if (isDecoyLogin) {
+          setApplications(dummyApplications);
+        } else {
+          const data = await applicationApi.list();
+          setApplications(data as Application[]);
+        }
+      } catch (err) {
+        toast.error("Failed to load applications");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -242,7 +258,12 @@ const ApplicationsPage = () => {
 
         {/* Applications table */}
         <div className="overflow-x-auto glass-card animate-slide-in">
-          {applications.length > 0 ? (
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-500" />
+              <span className="ml-4 text-gray-600 text-sm">Loading applications...</span>
+            </div>
+          ) : applications.length > 0 ? (
             <table className="w-full">
               <thead className="bg-gray-50 text-left">
                 <tr>

@@ -25,13 +25,25 @@ const FollowUp = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [activeTab, setActiveTab] = useState<'pending' | 'sent'>('pending');
     const [generatingMap, setGeneratingMap] = useState<Record<string, boolean>>({});
-
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
+    // const fetchFollowUpJobs = async () => {
+    //     const apps = await applicationApi.list();
+    //     setFollowUpJobs(apps);
+    // };
     const fetchFollowUpJobs = async () => {
-        const apps = await applicationApi.list();
-        setFollowUpJobs(apps);
+        setIsLoading(true);
+        try {
+            const apps = await applicationApi.list();
+            setFollowUpJobs(apps);
+        } catch (error) {
+            toast.error("Failed to load follow-up jobs");
+        } finally {
+            setIsLoading(false);
+        }
     };
+
 
     useEffect(() => {
         fetchFollowUpJobs();
@@ -117,11 +129,18 @@ const FollowUp = () => {
             setGeneratingMap(prev => ({ ...prev, [jobId]: false }));
         }
     };
-
-
-
     const selectedJob = followUpJobs.find(job => job.id === selectedJobId);
 
+    if (isLoading) {
+        return (
+            <PageContainer>
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+                    <p className="ml-4 text-gray-600">Loading follow-up applications...</p>
+                </div>
+            </PageContainer>
+        );
+    }
     return (
         <PageContainer>
             <div className="py-6">
