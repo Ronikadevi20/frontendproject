@@ -61,7 +61,7 @@ const SettingsPage = () => {
             </PageContainer>
         );
     }
-    if (!user || !settings) {
+    if (!isLoading && (!user || !settings)) {
         return (
             <PageContainer>
                 <div className="text-center py-12">
