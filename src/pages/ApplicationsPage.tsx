@@ -91,6 +91,7 @@ const ApplicationsPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDecoyMode, setIsDecoyMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingAppId, setDeletingAppId] = useState<string | null>(null);
   useEffect(() => {
     const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
     if (!isAuthenticated) {
@@ -112,6 +113,25 @@ const ApplicationsPage = () => {
     //     setApplications(data as Application[]);
     //   }
     // };
+    //   const loadApplications = async () => {
+    //     try {
+    //       setIsLoading(true);
+
+    //       if (isDecoyLogin) {
+    //         setApplications(dummyApplications);
+    //       } else {
+    //         const data = await applicationApi.list();
+    //         setApplications(data as Application[]);
+    //       }
+    //     } catch (err) {
+    //       toast.error("Failed to load applications");
+    //     } finally {
+    //       setIsLoading(false);
+    //     }
+    //   };
+
+    //   loadApplications();
+    // }, [navigate]);
     const loadApplications = async () => {
       try {
         setIsLoading(true);
@@ -127,305 +147,342 @@ const ApplicationsPage = () => {
 
         setApplications(apps);
 
-        // Optionally wait a tick for the state to flush (not always necessary)
+        // Wait a short tick to ensure render is flushed
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        setIsLoading(false); // ✅ Only mark loading false once everything is set
+        setIsLoading(false);
       } catch (err) {
         toast.error("Failed to load applications");
-        setIsLoading(false); // fallback
+        setIsLoading(false); // Ensure fallback in case of error
       }
     };
+    loadApplications();
+  }, [navigate]);
 
 
-    const handleSort = (field: 'company' | 'job_title' | 'status' | 'applied_date') => {
-      if (sortField === field) {
-        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+  const handleSort = (field: 'company' | 'job_title' | 'status' | 'applied_date') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const handleDelete = (app: Application) => {
+    setSelectedApp(app);
+    setIsDeleteDialogOpen(true);
+  };
+
+  // const confirmDelete = async () => {
+  //   if (!selectedApp) return;
+
+  //   try {
+  //     if (isDecoyMode) {
+  //       // Handle delete in decoy mode (just update the UI)
+  //       setApplications(applications.filter(app => app.id !== selectedApp.id));
+  //       toast.success('Application moved to trash.');
+  //     } else {
+  //       // Handle delete in regular mode
+  //       const success = await applicationApi.delete(selectedApp.id);
+  //       if (success) {
+  //         const updatedApplications = await applicationApi.list();
+  //         setApplications(updatedApplications as Application[]);
+  //         toast.success('Application moved to trash.');
+  //       }
+  //     }
+  //   } catch (error) {
+  //     toast.error('Failed to delete application');
+  //   } finally {
+  //     setIsDeleteDialogOpen(false);
+  //   }
+  // };
+  const confirmDelete = async () => {
+    if (!selectedApp) return;
+    setDeletingAppId(selectedApp.id); // ⏳ show loader on the correct row
+
+    try {
+      if (isDecoyMode) {
+        setApplications(apps => apps.filter(app => app.id !== selectedApp.id));
       } else {
-        setSortField(field);
-        setSortDirection('desc');
-      }
-    };
-
-    const handleDelete = (app: Application) => {
-      setSelectedApp(app);
-      setIsDeleteDialogOpen(true);
-    };
-
-    const confirmDelete = async () => {
-      if (!selectedApp) return;
-
-      try {
-        if (isDecoyMode) {
-          // Handle delete in decoy mode (just update the UI)
-          setApplications(applications.filter(app => app.id !== selectedApp.id));
-          toast.success('Application moved to trash.');
-        } else {
-          // Handle delete in regular mode
-          const success = await applicationApi.delete(selectedApp.id);
-          if (success) {
-            const updatedApplications = await applicationApi.list();
-            setApplications(updatedApplications as Application[]);
-            toast.success('Application moved to trash.');
-          }
+        const success = await applicationApi.delete(selectedApp.id);
+        if (success) {
+          const updated = await applicationApi.list();
+          setApplications(updated as Application[]);
         }
-      } catch (error) {
-        toast.error('Failed to delete application');
-      } finally {
-        setIsDeleteDialogOpen(false);
       }
-    };
+      toast.success('Application moved to trash.');
+    } catch (err) {
+      toast.error('Failed to delete application');
+    } finally {
+      setDeletingAppId(null); // 🛑 stop showing loading
+      setIsDeleteDialogOpen(false);
+    }
+  };
 
-    const getStatusColor = (status: Status) => {
-      switch (status) {
-        case 'applied': return 'bg-blue-500';
-        case 'interviewing': return 'bg-yellow-500';
-        case 'offered': return 'bg-green-500';
-        case 'accepted': return 'bg-green-600';
-        case 'rejected': return 'bg-red-500';
-        case 'declined': return 'bg-red-600';
-        default: return 'bg-gray-500';
+
+  const getStatusColor = (status: Status) => {
+    switch (status) {
+      case 'applied': return 'bg-blue-500';
+      case 'interviewing': return 'bg-yellow-500';
+      case 'offered': return 'bg-green-500';
+      case 'accepted': return 'bg-green-600';
+      case 'rejected': return 'bg-red-500';
+      case 'declined': return 'bg-red-600';
+      default: return 'bg-gray-500';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const filteredAndSortedApplications = applications
+    .filter(app =>
+      app.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.job_title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortField === 'applied_date') {
+        return sortDirection === 'asc'
+          ? new Date(a.applied_date).getTime() - new Date(b.applied_date).getTime()
+          : new Date(b.applied_date).getTime() - new Date(a.applied_date).getTime();
+      } else {
+        const aValue = a[sortField].toString().toLowerCase();
+        const bValue = b[sortField].toString().toLowerCase();
+
+        return sortDirection === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
       }
-    };
+    });
 
-    const formatDate = (dateString: string) => {
-      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    };
+  // Handle navigation to maintain decoy mode
+  const handleAddApplication = () => {
+    if (sessionStorage.getItem('decoy_mode') === 'true') return
+    navigate('/applications/new');
+  };
 
-    const filteredAndSortedApplications = applications
-      .filter(app =>
-        app.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        app.job_title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-      .sort((a, b) => {
-        if (sortField === 'applied_date') {
-          return sortDirection === 'asc'
-            ? new Date(a.applied_date).getTime() - new Date(b.applied_date).getTime()
-            : new Date(b.applied_date).getTime() - new Date(a.applied_date).getTime();
-        } else {
-          const aValue = a[sortField].toString().toLowerCase();
-          const bValue = b[sortField].toString().toLowerCase();
+  const handleViewApplication = (appId: string) => {
+    navigate(`/applications/view/${appId}`);
+  };
 
-          return sortDirection === 'asc'
-            ? aValue.localeCompare(bValue)
-            : bValue.localeCompare(aValue);
-        }
-      });
+  const handleEditApplication = (appId: string) => {
+    navigate(`/applications/edit/${appId}`);
+  };
 
-    // Handle navigation to maintain decoy mode
-    const handleAddApplication = () => {
-      if (sessionStorage.getItem('decoy_mode') === 'true') return
-      navigate('/applications/new');
-    };
-
-    const handleViewApplication = (appId: string) => {
-      navigate(`/applications/view/${appId}`);
-    };
-
-    const handleEditApplication = (appId: string) => {
-      navigate(`/applications/edit/${appId}`);
-    };
-
-    return (
-      <PageContainer>
-        <div className="app-container py-8">
-          {/* Header Section with Add Application Button */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Job Applications</h1>
-              <p className="text-gray-600 mt-1">Track and manage your job applications</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Search applications..."
-                  className="pl-10"
-                  value={searchQuery}
-                  onChange={(e) => { sessionStorage.getItem('decoy_mode') !== 'true' && setSearchQuery(e.target.value) }}
-                />
-              </div>
-              <div className="flex items-center space-x-4">
-                {/* trash button */}
-                <Button variant="outline" onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && navigate('/trash') }}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Trash
-                </Button>
-
-                <Button onClick={handleAddApplication} className="whitespace-nowrap">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add Job Application
-                </Button>
-              </div>
-            </div>
+  return (
+    <PageContainer>
+      <div className="app-container py-8">
+        {/* Header Section with Add Application Button */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Job Applications</h1>
+            <p className="text-gray-600 mt-1">Track and manage your job applications</p>
           </div>
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search applications..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => { sessionStorage.getItem('decoy_mode') !== 'true' && setSearchQuery(e.target.value) }}
+              />
+            </div>
+            <div className="flex items-center space-x-4">
+              {/* trash button */}
+              <Button variant="outline" onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && navigate('/trash') }}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                Trash
+              </Button>
 
-          {/* Applications table */}
-          <div className="overflow-x-auto glass-card animate-slide-in">
-            {isLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-500" />
-                <span className="ml-4 text-gray-600 text-sm">Loading applications...</span>
-              </div>
-            ) : applications.length > 0 ? (
-              <table className="w-full">
-                <thead className="bg-gray-50 text-left">
-                  <tr>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <button
-                        onClick={() => handleSort('company')}
-                        className="flex items-center space-x-1 focus:outline-none"
-                      >
-                        <span>Company</span>
-                        {sortField === 'company' && (
-                          <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
-                        )}
-                      </button>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <button
-                        onClick={() => handleSort('job_title')}
-                        className="flex items-center space-x-1 focus:outline-none"
-                      >
-                        <span>Position</span>
-                        {sortField === 'job_title' && (
-                          <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
-                        )}
-                      </button>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <button
-                        onClick={() => handleSort('status')}
-                        className="flex items-center space-x-1 focus:outline-none"
-                      >
-                        <span>Status</span>
-                        {sortField === 'status' && (
-                          <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
-                        )}
-                      </button>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      <button
-                        onClick={() => handleSort('applied_date')}
-                        className="flex items-center space-x-1 focus:outline-none"
-                      >
-                        <span>Date</span>
-                        {sortField === 'applied_date' && (
-                          <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
-                        )}
-                      </button>
-                    </th>
-                    <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredAndSortedApplications.map((app) => (
-                    <tr key={app.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{app.company}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-gray-900">{app.job_title}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor(app.status)} mr-2`}></div>
-                          <span className="capitalize">{app.status}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-500">{formatDate(app.applied_date)}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleViewApplication(app.id) }}
-                          >
-                            <Eye size={16} color='blue' />
-                            <span className="sr-only">View</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleEditApplication(app.id) }}
-                          >
-                            <Edit size={16} />
-                            <span className="sr-only">Edit</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleDelete(app) }}
-                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                          >
-                            <Trash2 size={16} />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-center py-12">
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
-                <p className="mt-4 text-lg text-gray-600">No applications found</p>
-                <p className="text-gray-500 mb-4">Start tracking your job applications</p>
-                <Button onClick={handleAddApplication}>
-                  Add Your First Job Application
-                </Button>
-              </div>
-            )}
+              <Button onClick={handleAddApplication} className="whitespace-nowrap">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Job Application
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Delete confirmation dialog */}
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Move to Trash</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <p className="text-gray-600">
-                Are you sure you want to move the application for{' '}
-                <span className="font-medium">{selectedApp?.job_title}</span> at{' '}
-                <span className="font-medium">{selectedApp?.company}</span> to trash?
-              </p>
+        {/* Applications table */}
+        <div className="overflow-x-auto glass-card animate-slide-in">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-gray-500" />
+              <span className="ml-4 text-gray-600 text-sm">Loading applications...</span>
             </div>
-            <DialogFooter className="sm:justify-end">
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-              </DialogClose>
-              <Button type="button" variant="destructive" onClick={confirmDelete}>
-                Move to Trash
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </PageContainer>
-    );
-  };
+          ) : applications.length > 0 ? (
+            <table className="w-full">
+              <thead className="bg-gray-50 text-left">
+                <tr>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort('company')}
+                      className="flex items-center space-x-1 focus:outline-none"
+                    >
+                      <span>Company</span>
+                      {sortField === 'company' && (
+                        <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
+                      )}
+                    </button>
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort('job_title')}
+                      className="flex items-center space-x-1 focus:outline-none"
+                    >
+                      <span>Position</span>
+                      {sortField === 'job_title' && (
+                        <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
+                      )}
+                    </button>
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort('status')}
+                      className="flex items-center space-x-1 focus:outline-none"
+                    >
+                      <span>Status</span>
+                      {sortField === 'status' && (
+                        <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
+                      )}
+                    </button>
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <button
+                      onClick={() => handleSort('applied_date')}
+                      className="flex items-center space-x-1 focus:outline-none"
+                    >
+                      <span>Date</span>
+                      {sortField === 'applied_date' && (
+                        <ArrowUpDown size={14} className={sortDirection === 'asc' ? 'rotate-180' : ''} />
+                      )}
+                    </button>
+                  </th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredAndSortedApplications.map((app) => (
+                  <tr key={app.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium text-gray-900">{app.company}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-gray-900">{app.job_title}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className={`h-2.5 w-2.5 rounded-full ${getStatusColor(app.status)} mr-2`}></div>
+                        <span className="capitalize">{app.status}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-gray-500">{formatDate(app.applied_date)}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleViewApplication(app.id) }}
+                        >
+                          <Eye size={16} color='blue' />
+                          <span className="sr-only">View</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { sessionStorage.getItem('decoy_mode') !== 'true' && handleEditApplication(app.id) }}
+                        >
+                          <Edit size={16} />
+                          <span className="sr-only">Edit</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          disabled={deletingAppId === app.id}
+                          onClick={() => {
+                            if (sessionStorage.getItem('decoy_mode') !== 'true') {
+                              handleDelete(app);
+                            }
+                          }}
+                        >
+                          {deletingAppId === app.id ? (
+                            <svg className="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
+                        </Button>
 
-  export default ApplicationsPage;
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-12">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                />
+              </svg>
+              <p className="mt-4 text-lg text-gray-600">No applications found</p>
+              <p className="text-gray-500 mb-4">Start tracking your job applications</p>
+              <Button onClick={handleAddApplication}>
+                Add Your First Job Application
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Move to Trash</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-600">
+              Are you sure you want to move the application for{' '}
+              <span className="font-medium">{selectedApp?.job_title}</span> at{' '}
+              <span className="font-medium">{selectedApp?.company}</span> to trash?
+            </p>
+          </div>
+          <DialogFooter className="sm:justify-end">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="button" variant="destructive" onClick={confirmDelete}>
+              Move to Trash
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PageContainer>
+  );
+};
+
+export default ApplicationsPage;
