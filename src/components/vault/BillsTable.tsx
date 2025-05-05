@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import billsApi, { BillEntry } from '@/api/billsApi';
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { PageContainer } from '../layout/PageContainer';
 
 interface BillsTableProps {
     bills: BillEntry[];
@@ -76,8 +77,9 @@ const BillsTable = ({
 
     if (isLoading) {
         return (
-            <div className="text-center py-12 glass-card animate-pulse">
-                <p className="text-lg text-gray-600">Loading bills...</p>
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600" />
+                <p className="ml-4 text-gray-600">Loading bills </p>
             </div>
         );
     }
